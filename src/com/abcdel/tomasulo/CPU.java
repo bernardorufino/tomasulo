@@ -3,32 +3,35 @@ package com.abcdel.tomasulo;
 import java.util.List;
 
 public class CPU {
-  private Register[] registerBase = new Register[32];
-  private List<Instruction> instructionList;
-  private ReserveStation[] reserveStations = new ReserveStation[11];
+    private final int RESERVE_STATION_LOAD_SIZE = 5;
+    private final int RESERVE_STATION_ADD_SIZE = 3;
+    private final int RESERVE_STATION_MULT_SIZE = 3;
 
-  public CPU(List<Instruction> instructionList){
-    this.instructionList = instructionList;
+    private Register[] registerBase = new Register[32];
+    private List<Instruction> instructionList;
+    private ReserveStation[] reserveStations = new ReserveStation[11];
 
-    // For initial purposes only
-    for(int i = 0 ; i < 5 ; i++){
-      reserveStations[i] = new ReserveStation("ER"+i+1,"Load/Store");
+    public CPU(List<Instruction> instructionList) {
+        this.instructionList = instructionList;
+
+        // For initial purposes only
+        for(int i = 0 ; i < reserveStations.length ; i++){
+            if(i < RESERVE_STATION_LOAD_SIZE)
+                reserveStations[i] = new ReserveStation("ER" + i + 1, ReserveStation.Type.LOAD);
+            else if(i<RESERVE_STATION_LOAD_SIZE + RESERVE_STATION_ADD_SIZE)
+                reserveStations[i] = new ReserveStation("ER" + i + 1, ReserveStation.Type.ADD);
+            else
+                reserveStations[i] = new ReserveStation("ER" + i + 1, ReserveStation.Type.MULT);
+        }
     }
-    for(int i = 5 ; i < 8 ; i++){
-      reserveStations[i] = new ReserveStation("ER"+i+1,"Load/Store");
+
+    public void nextStep() {
+        Instruction instruction = instructionList.get(0);
+
     }
-    for(int i = 8 ; i < 11 ; i++){
-      reserveStations[i] = new ReserveStation("ER"+i+1,"Load/Store");
+
+    public ReserveStation[] getTable() {
+        return reserveStations;
     }
-  }
-
-  public void nextStep() {
-    Instruction instruction = instructionList.get(0);
-
-  }
-
-  public ReserveStation[] getTable(){
-    return reserveStations;
-  }
 
 }
