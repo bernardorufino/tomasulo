@@ -30,7 +30,7 @@ public class TableViewSample extends Application {
     Scene scene = new Scene(new Group());
     stage.setTitle("Main Application");
     stage.setWidth(900);
-    stage.setHeight(500);
+    stage.setHeight(600);
 
     BorderPane border = new BorderPane();
     border.setCenter(createGridPane());
@@ -39,7 +39,10 @@ public class TableViewSample extends Application {
     stage.show();
   }
 
-  private TableView createReserveStationTable(){
+  private VBox createReserveStationTable(){
+    final Label label = new Label("Estações de Reserva");
+    label.setFont(new Font("Arial", 20));
+    final VBox vbox = new VBox();
     TableView table = new TableView();
     table.setEditable(false);
     List<TableColumn> tableColumnsList = new ArrayList<TableColumn>();
@@ -51,25 +54,36 @@ public class TableViewSample extends Application {
     }
 
     table.getColumns().addAll(tableColumnsList);
-    return table;
+    vbox.setSpacing(5);
+    vbox.setPadding(new Insets(10, 0, 0, 10));
+    vbox.getChildren().addAll(label, table);
+    return vbox;
   }
 
-  public GridPane createGridPane(){
+  private VBox createRecentlyUsedMemoryTable() {
+    final Label label = new Label("Memória recentemente usada");
+    label.setFont(new Font("Arial", 20));
+    final VBox vbox = new VBox();
+    TableView table = new TableView();
+    table.setEditable(false);
+    List<TableColumn> tableColumnList = new ArrayList<TableColumn>();
+    tableColumnList.add(new TableColumn("teste1"));
+    tableColumnList.add(new TableColumn("teste2"));
+    table.getColumns().addAll(tableColumnList);
+    vbox.setSpacing(5);
+    vbox.setPadding(new Insets(10, 0, 0, 10));
+    vbox.getChildren().addAll(label, table);
+    return vbox;
+  }
+
+  private GridPane createGridPane(){
     GridPane grid = new GridPane();
     grid.setHgap(10);
     grid.setVgap(10);
     grid.setPadding(new Insets(0, 10, 0, 10));
 
-    TableView table = createReserveStationTable();
-    final Label label = new Label("Estações de Reserva");
-    label.setFont(new Font("Arial", 20));
-    final VBox vbox = new VBox();
-    vbox.setSpacing(5);
-    vbox.setPadding(new Insets(10, 0, 0, 10));
-    vbox.getChildren().addAll(label, table);
-
-    grid.add(vbox, 1, 0);
-
+    grid.add(createReserveStationTable(), 1, 0);
+    grid.add(createRecentlyUsedMemoryTable(), 1, 2);
     return grid;
   }
 
