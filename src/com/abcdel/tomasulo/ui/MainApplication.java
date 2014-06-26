@@ -1,12 +1,10 @@
 package com.abcdel.tomasulo.ui;
 
-import com.abcdel.tomasulo.simulator.ReserveStation;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import com.abcdel.tomasulo.simulator.MockSimulator;
 import com.abcdel.tomasulo.simulator.Simulator;
-import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -33,7 +31,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.lang.reflect.Field;
-import java.util.Observable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,10 +40,11 @@ public class MainApplication extends Application {
 
     private Stage mPrimaryStage;
     private Button mPlayButton;
-    private Button mPauseButton;
     private Button mStopButton;
     private Button mStepButton;
     private Button mFileButton;
+    private ImageView mPlayIcon;
+    private ImageView mPauseIcon;
 
     private final List<ApplicationListener> mListeners = new ArrayList<ApplicationListener>();
     private ApplicationState mApplicationState;
@@ -86,55 +84,8 @@ public class MainApplication extends Application {
 
     public void setApplicationState(ApplicationState applicationState) {
         mApplicationState = applicationState;
-        switch (applicationState) {
-            case STAND_BY:
-                mPlayButton.setVisible(true);
-                mPauseButton.setVisible(false);
-
-                mPlayButton.setDisable(true);
-                mStepButton.setDisable(true);
-                mStopButton.setDisable(true);
-                mFileButton.setDisable(false);
-                clearData();
-                break;
-            case LOADED:
-                mPlayButton.setVisible(true);
-                mPauseButton.setVisible(false);
-
-                mPlayButton.setDisable(false);
-                mStepButton.setDisable(false);
-                mStopButton.setDisable(true);
-                mFileButton.setDisable(false);
-                break;
-            case RUNNING:
-                mPlayButton.setVisible(false);
-                mPauseButton.setVisible(true);
-
-                mStepButton.setDisable(true);
-                mStopButton.setDisable(false);
-                mFileButton.setDisable(true);
-                break;
-            case PAUSED:
-                mPlayButton.setVisible(true);
-                mPauseButton.setVisible(false);
-
-                mPlayButton.setDisable(false);
-                mStepButton.setDisable(false);
-                mStopButton.setDisable(false);
-                mFileButton.setDisable(true);
-                break;
-            case STEPPING:
-                mPlayButton.setVisible(true);
-                mPauseButton.setVisible(false);
-
-                mPlayButton.setDisable(true);
-                mStepButton.setDisable(true);
-                mStopButton.setDisable(false);
-                mFileButton.setDisable(true);
-                break;
-            default:
-                break;
-        }
+        updatePlayIcon();
+        updateEnabledButtons();
     }
 
     public void addListener(ApplicationListener listener) {
@@ -156,29 +107,34 @@ public class MainApplication extends Application {
         buttonBar.getStyleClass().setAll("segmented-button-bar");
 
         mPlayButton = new Button();
+        mPlayButton.getStyleClass().addAll("first");
+
+        mPlayIcon = null;
+        mPauseIcon = null;
+
         try {
-            mPlayButton.setGraphic(new ImageView(new Image(
+            mPlayIcon = new ImageView(new Image(
                     new FileInputStream("res/icons/play.png"),
                     BUTTON_IMAGE_DIMENSION,
                     BUTTON_IMAGE_DIMENSION,
                     true,
-                    true)));
+                    true));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        mPlayButton.getStyleClass().addAll("first");
 
-        mPauseButton = new Button();
         try {
-            mPauseButton.setGraphic(new ImageView(new Image(
+            mPauseIcon = new ImageView(new Image(
                     new FileInputStream("res/icons/pause.png"),
                     BUTTON_IMAGE_DIMENSION,
                     BUTTON_IMAGE_DIMENSION,
                     true,
-                    true)));
+                    true));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+
+        updatePlayIcon();
 
         mStopButton = new Button();
         try {
@@ -217,7 +173,7 @@ public class MainApplication extends Application {
         }
         mFileButton.getStyleClass().addAll("last", "capsule");
 
-        buttonBar.getChildren().addAll(mPlayButton, mPauseButton, mStopButton, mStepButton, mFileButton);
+        buttonBar.getChildren().addAll(mPlayButton, mStopButton, mStepButton, mFileButton);
 
         final Label loadedFileLabel = new Label("No File was loaded");
         loadedFileLabel.setTextFill(Color.BLACK);
@@ -236,15 +192,11 @@ public class MainApplication extends Application {
             @Override
             public void handle(ActionEvent event) {
                 for (ApplicationListener listener : mListeners) {
-                    listener.onPlay();
-                }
-            }
-        });
-        mPauseButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                for (ApplicationListener listener : mListeners) {
-                    listener.onPause();
+                    if (shouldDisplayPauseButton()) {
+                        listener.onPause();
+                    } else {
+                        listener.onPlay();
+                    }
                 }
             }
         });
@@ -322,7 +274,7 @@ public class MainApplication extends Application {
         for (Field field : fields) {
             String fieldName = field.getName();
             TableColumn<ReserveStationTableRow, String> column = new TableColumn<ReserveStationTableRow, String>(fieldName.substring(1, fieldName.length()));
-            column.setCellValueFactory( new PropertyValueFactory<ReserveStationTableRow, String>(fieldName));
+            column.setCellValueFactory(new PropertyValueFactory<ReserveStationTableRow, String>(fieldName));
             column.prefWidthProperty().bind(table.widthProperty().divide(fields.length));
             table.getColumns().add(column);
         }
@@ -337,8 +289,49 @@ public class MainApplication extends Application {
         return vbox;
     }
 
-    private void clearData() {
+    private void updatePlayIcon() {
+        mPlayButton.setGraphic(shouldDisplayPauseButton() ? mPauseIcon : mPlayIcon);
+    }
 
+    private boolean shouldDisplayPauseButton() {
+        return mApplicationState == ApplicationState.RUNNING;
+    }
+
+    private void updateEnabledButtons() {
+        switch (mApplicationState) {
+            case STAND_BY:
+                mPlayButton.setDisable(true);
+                mStepButton.setDisable(true);
+                mStopButton.setDisable(true);
+                mFileButton.setDisable(false);
+                break;
+            case LOADED:
+                mPlayButton.setDisable(false);
+                mStepButton.setDisable(false);
+                mStopButton.setDisable(true);
+                mFileButton.setDisable(false);
+                break;
+            case RUNNING:
+                mPlayButton.setDisable(false);
+                mStepButton.setDisable(true);
+                mStopButton.setDisable(false);
+                mFileButton.setDisable(true);
+                break;
+            case PAUSED:
+                mPlayButton.setDisable(false);
+                mStepButton.setDisable(false);
+                mStopButton.setDisable(false);
+                mFileButton.setDisable(true);
+                break;
+            case STEPPING:
+                mPlayButton.setDisable(true);
+                mStepButton.setDisable(true);
+                mStopButton.setDisable(false);
+                mFileButton.setDisable(true);
+                break;
+            default:
+                break;
+        }
     }
 
     public enum ApplicationState {
@@ -347,9 +340,13 @@ public class MainApplication extends Application {
 
     public interface ApplicationListener {
         public void onFileLoaded(File file);
+
         public void onPlay();
+
         public void onStop();
+
         public void onStep();
+
         public void onPause();
     }
 }
