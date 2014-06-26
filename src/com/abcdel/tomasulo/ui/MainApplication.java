@@ -1,6 +1,9 @@
 package com.abcdel.tomasulo.ui;
 
+import com.abcdel.tomasulo.simulator.ReserveStation;
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -26,6 +29,7 @@ import javafx.stage.Stage;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.lang.reflect.Field;
+import java.util.Observable;
 
 public class MainApplication extends Application {
 
@@ -47,7 +51,7 @@ public class MainApplication extends Application {
         sp.setFitToHeight(true);
         sp.setContent(createContentPane());
         ((Group) scene.getRoot()).getChildren().addAll(sp);
-        stage.setMaximized(true);
+        //stage.setMaximized(true);
         stage.setScene(scene);
         stage.show();
     }
@@ -158,16 +162,25 @@ public class MainApplication extends Application {
         final Label label = new Label("Reserve Stations");
         label.setFont(new Font("Arial", 20));
         final VBox vbox = new VBox();
-        TableView table = new TableView();
+        TableView<ReserveStationTableRow> table = new TableView<ReserveStationTableRow>();
         table.setMinSize(Control.USE_PREF_SIZE, Control.USE_PREF_SIZE);
         table.setMaxSize(Control.USE_PREF_SIZE, Control.USE_PREF_SIZE);
+        table.setPrefWidth(1000);
         table.setEditable(false);
-        for (Field field : ReserveStationTableRow.class.getDeclaredFields()) {
+        Field[] fields = ReserveStationTableRow.class.getDeclaredFields();
+        for (Field field : fields) {
             String fieldName = field.getName();
-            TableColumn column = new TableColumn(fieldName.substring(1, fieldName.length()));
-            column.setCellFactory(new PropertyValueFactory<ReserveStationTableRow, String>(fieldName));
+            TableColumn<ReserveStationTableRow, String> column = new TableColumn<ReserveStationTableRow, String>(fieldName.substring(1, fieldName.length()));
+            column.setCellValueFactory( new PropertyValueFactory<ReserveStationTableRow, String>(fieldName));
+            column.prefWidthProperty().bind(table.widthProperty().divide(fields.length));
             table.getColumns().add(column);
         }
+
+        ObservableList<ReserveStationTableRow> testList =
+                FXCollections.observableArrayList(
+                        new ReserveStationTableRow("R1", "Add", "yes", "Execute", "", "Mem[34 + Regs[R2]", "Load2", "", ""));
+
+        table.setItems(testList);
         vbox.setSpacing(5);
         vbox.getChildren().addAll(label, table);
         return vbox;
