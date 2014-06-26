@@ -1,6 +1,9 @@
 package com.abcdel.tomasulo.simulator;
 
 import com.abcdel.tomasulo.simulator.instruction.Instruction;
+import com.google.common.collect.ImmutableList;
+
+import java.util.List;
 
 public class Cpu {
 
@@ -10,10 +13,10 @@ public class Cpu {
     private final int[] mRegs = new int[REGISTERS];
     private final RegisterStat[] mRegisterStats = new RegisterStat[REGISTERS];
     private final ReserveStation[] mReserveStations = new ReserveStation[ReserveStation.getTotalSize()];
-    private final Iterable<Instruction> mInstructions;
+    private final List<Instruction> mInstructions;
 
-    public Cpu(Iterable<Instruction> instructions) {
-        mInstructions = instructions;
+    public Cpu(List<Instruction> instructions) {
+        mInstructions = ImmutableList.copyOf(instructions);
     }
 
     public void nextStep() {
