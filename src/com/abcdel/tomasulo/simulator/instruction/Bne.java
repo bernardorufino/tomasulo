@@ -1,6 +1,6 @@
-package com.abcdel.tomasulo.ents.instruction;
+package com.abcdel.tomasulo.simulator.instruction;
 
-import com.abcdel.tomasulo.cpu.Cpu;
+import com.abcdel.tomasulo.simulator.Cpu;
 
 public class Bne extends IInstruction {
 

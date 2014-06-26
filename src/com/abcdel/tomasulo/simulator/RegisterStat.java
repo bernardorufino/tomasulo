@@ -1,4 +1,4 @@
-package com.abcdel.tomasulo.ents;
+package com.abcdel.tomasulo.simulator;
 
 public class RegisterStat {
 

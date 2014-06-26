@@ -1,4 +1,4 @@
-package com.abcdel.tomasulo.ents.instruction;
+package com.abcdel.tomasulo.simulator.instruction;
 
 public class IInstruction implements Instruction {
 

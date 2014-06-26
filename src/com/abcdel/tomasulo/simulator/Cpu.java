@@ -1,8 +1,6 @@
-package com.abcdel.tomasulo.cpu;
+package com.abcdel.tomasulo.simulator;
 
-import com.abcdel.tomasulo.ents.instruction.Instruction;
-import com.abcdel.tomasulo.ents.RegisterStat;
-import com.abcdel.tomasulo.ents.ReserveStation;
+import com.abcdel.tomasulo.simulator.instruction.Instruction;
 
 public class Cpu {
 

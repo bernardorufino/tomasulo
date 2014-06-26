@@ -1,6 +1,6 @@
-package com.abcdel.tomasulo.ents;
+package com.abcdel.tomasulo.simulator;
 
-import com.abcdel.tomasulo.ents.instruction.Instruction;
+import com.abcdel.tomasulo.simulator.instruction.Instruction;
 
 public class ReserveStation {
 
