@@ -8,9 +8,12 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -18,7 +21,6 @@ import java.util.List;
 
 public class TableViewSample extends Application {
 
-  private TableView table = new TableView();
   public static void main(String[] args) {
     launch(args);
   }
@@ -30,10 +32,16 @@ public class TableViewSample extends Application {
     stage.setWidth(900);
     stage.setHeight(500);
 
-    final Label label = new Label("Estações de Reserva");
-    label.setFont(new Font("Arial", 20));
+    BorderPane border = new BorderPane();
+    border.setCenter(createGridPane());
+    ((Group) scene.getRoot()).getChildren().addAll(border);
+    stage.setScene(scene);
+    stage.show();
+  }
 
-    table.setEditable(true);
+  private TableView createReserveStationTable(){
+    TableView table = new TableView();
+    table.setEditable(false);
     List<TableColumn> tableColumnsList = new ArrayList<TableColumn>();
     for (Field field : ReserveStationTableRow.class.getDeclaredFields()) {
       String fieldName = field.getName();
@@ -43,15 +51,26 @@ public class TableViewSample extends Application {
     }
 
     table.getColumns().addAll(tableColumnsList);
+    return table;
+  }
+
+  public GridPane createGridPane(){
+    GridPane grid = new GridPane();
+    grid.setHgap(10);
+    grid.setVgap(10);
+    grid.setPadding(new Insets(0, 10, 0, 10));
+
+    TableView table = createReserveStationTable();
+    final Label label = new Label("Estações de Reserva");
+    label.setFont(new Font("Arial", 20));
     final VBox vbox = new VBox();
     vbox.setSpacing(5);
     vbox.setPadding(new Insets(10, 0, 0, 10));
     vbox.getChildren().addAll(label, table);
 
-    ((Group) scene.getRoot()).getChildren().addAll(vbox);
+    grid.add(vbox, 1, 0);
 
-    stage.setScene(scene);
-    stage.show();
+    return grid;
   }
 
 }
