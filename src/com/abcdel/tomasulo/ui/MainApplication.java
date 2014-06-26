@@ -6,15 +6,30 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.lang.reflect.Field;
 
 public class MainApplication extends Application {
+
+    private static final int BUTTON_IMAGE_DIMENSION = 15;
 
     public static void main(String[] args) {
         launch(args);
@@ -28,6 +43,8 @@ public class MainApplication extends Application {
         sp.setStyle("-fx-background: rgb(80,80,80);");
         sp.prefHeightProperty().bind(scene.heightProperty());
         sp.prefWidthProperty().bind(scene.widthProperty());
+        sp.setFitToWidth(true);
+        sp.setFitToHeight(true);
         sp.setContent(createContentPane());
         ((Group) scene.getRoot()).getChildren().addAll(sp);
         stage.setMaximized(true);
@@ -36,13 +53,79 @@ public class MainApplication extends Application {
     }
 
     private Node createContentPane() {
+        BorderPane borderPane = new BorderPane();
+
+        ToolBar toolBar = new ToolBar();
+        borderPane.setTop(toolBar);
+
+        Region spacer = new Region();
+        spacer.getStyleClass().setAll("spacer");
+
+        HBox buttonBar = new HBox();
+        buttonBar.getStyleClass().setAll("segmented-button-bar");
+
+        Button playButton = new Button();
+        try {
+            playButton.setGraphic(new ImageView(new Image(
+                    new FileInputStream("res/icons/play.png"),
+                    BUTTON_IMAGE_DIMENSION,
+                    BUTTON_IMAGE_DIMENSION,
+                    true,
+                    true)));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        playButton.getStyleClass().addAll("first");
+
+        Button stopButton = new Button();
+        try {
+            stopButton.setGraphic(new ImageView(new Image(
+                    new FileInputStream("res/icons/stop.png"),
+                    BUTTON_IMAGE_DIMENSION,
+                    BUTTON_IMAGE_DIMENSION,
+                    true,
+                    true)));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        Button stepButton = new Button();
+        try {
+            stepButton.setGraphic(new ImageView(new Image(
+                    new FileInputStream("res/icons/step.png"),
+                    BUTTON_IMAGE_DIMENSION,
+                    BUTTON_IMAGE_DIMENSION,
+                    true,
+                    true)));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        Button openButton = new Button();
+        try {
+            openButton.setGraphic(new ImageView(new Image(
+                    new FileInputStream("res/icons/folder.png"),
+                    BUTTON_IMAGE_DIMENSION,
+                    BUTTON_IMAGE_DIMENSION,
+                    true,
+                    true)));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        openButton.getStyleClass().addAll("last", "capsule");
+
+        buttonBar.getChildren().addAll(playButton, stopButton, stepButton, openButton);
+        toolBar.getItems().addAll(spacer, buttonBar);
+
         VBox vbox = new VBox();
-        vbox.setSpacing(10);
         vbox.setPadding(new Insets(10, 10, 10, 10));
+        vbox.setSpacing(10);
 
         vbox.getChildren().add(createReserveStationTable());
         vbox.getChildren().add(createSecondaryTables());
-        return vbox;
+
+        borderPane.setCenter(vbox);
+        return borderPane;
     }
 
     private Node createSecondaryTables() {
