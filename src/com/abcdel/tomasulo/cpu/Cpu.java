@@ -6,6 +6,7 @@ import com.abcdel.tomasulo.ents.ReserveStation;
 
 public class Cpu {
 
+    public static final int NO_REGISTER = -1;
     private static final int REGISTERS = 32;
 
     private final int[] mRegs = new int[REGISTERS];

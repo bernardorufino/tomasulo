@@ -1,5 +1,10 @@
 package com.abcdel.tomasulo.ents.instruction;
 
 public interface Instruction {
-    /* Empty */
+
+    public int[] dependencies();
+
+    public int assignee();
+
+    /* TODO: Create execute */
 }
