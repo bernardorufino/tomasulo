@@ -6,9 +6,9 @@ import com.abcdel.tomasulo.simulator.ReserveStation;
 
 public interface ExecFlow {
 
-    public int issue(ReserveStation[] RS, RegisterStat[] registerStat, int[] Regs, Memory mem, int r);
+    public int issue(ReserveStation[] RS, RegisterStat[] registerStat, int[] Regs, int r);
 
-    public int execute(ReserveStation[] RS, RegisterStat[] registerStat, int[] Regs, Memory mem, int r);
+    public int execute(ReserveStation[] RS, Memory mem, int r);
 
     public int write(ReserveStation[] RS, RegisterStat[] registerStat, int[] Regs, Memory mem, int r);
 }

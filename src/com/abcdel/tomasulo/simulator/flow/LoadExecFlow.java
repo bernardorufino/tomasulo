@@ -11,7 +11,7 @@ public class LoadExecFlow extends AbstractExecFlow implements ExecFlow{
     }
 
     @Override
-    public int issue(ReserveStation[] RS, RegisterStat[] registerStat, int[] Regs, Memory mem, int r) {
+    public int issue(ReserveStation[] RS, RegisterStat[] registerStat, int[] Regs, int r) {
         if(registerStat[rs].Qi != null) {
             RS[r].Vj = 0;
             RS[r].Qj = registerStat[rs].Qi;
@@ -26,7 +26,7 @@ public class LoadExecFlow extends AbstractExecFlow implements ExecFlow{
     }
 
     @Override
-    public int execute(ReserveStation[] RS, RegisterStat[] registerStat, int[] Regs, Memory mem, int r) {
+    public int execute(ReserveStation[] RS, Memory mem, int r) {
         // Step 1
         RS[r].A = RS[r].Vj + RS[r].A;
         // Step 2

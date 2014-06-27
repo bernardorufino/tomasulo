@@ -17,7 +17,7 @@ public class FpExecFlow extends AbstractExecFlow implements ExecFlow {
     }
 
     @Override
-    public int issue(ReserveStation[] RS, RegisterStat[] registerStat, int[] Regs, Memory mem, int r) {
+    public int issue(ReserveStation[] RS, RegisterStat[] registerStat, int[] Regs, int r) {
         if(registerStat[rs].Qi != null) {
             RS[r].Vj = 0;
             RS[r].Qj = registerStat[rs].Qi;
@@ -42,9 +42,8 @@ public class FpExecFlow extends AbstractExecFlow implements ExecFlow {
         return 1;
     }
 
-    // TODO verify need of all these parameters after implement all the other Flows
     @Override
-    public int execute(ReserveStation[] RS, RegisterStat[] registerStat, int[] Regs, Memory mem, int r) {
+    public int execute(ReserveStation[] RS, Memory mem, int r) {
         Instruction instruction = getInstruction();
         if(instruction instanceof Div) return 5;
         if(instruction instanceof Mul) return 3;
