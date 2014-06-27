@@ -243,33 +243,20 @@ public class MainApplication extends Application {
     }
 
     private Node createRecentlyUsedMemoryTable() {
-        final Label label = new Label("Recently Used Memory");
-        label.setFont(new Font("Arial", 20));
-        final VBox vbox = new VBox();
         TableView table = new TableView();
-        table.setMinSize(Control.USE_PREF_SIZE, Control.USE_PREF_SIZE);
-        table.setMaxSize(Control.USE_PREF_SIZE, Control.USE_PREF_SIZE);
-        table.setEditable(false);
-        for (Field field : RecentlyUsedMemoryTableRow.class.getDeclaredFields()) {
+        Field[] fields = RecentlyUsedMemoryTableRow.class.getDeclaredFields();
+        for (Field field : fields) {
             String fieldName = field.getName();
             TableColumn column = new TableColumn(fieldName.substring(1, fieldName.length()));
             column.setCellFactory(new PropertyValueFactory<ReserveStationTableRow, String>(fieldName));
+            column.prefWidthProperty().bind(table.widthProperty().divide(fields.length));
             table.getColumns().add(column);
         }
-        vbox.setSpacing(5);
-        vbox.getChildren().addAll(label, table);
-        return vbox;
+        return configureTable(table, "Recently Used Memory", 1000, 400);
     }
 
     private Node createReserveStationTable() {
-        final Label label = new Label("Reserve Stations");
-        label.setFont(new Font("Arial", 20));
-        final VBox vbox = new VBox();
         TableView<ReserveStationTableRow> table = new TableView<ReserveStationTableRow>();
-        table.setMinSize(Control.USE_PREF_SIZE, Control.USE_PREF_SIZE);
-        table.setMaxSize(Control.USE_PREF_SIZE, Control.USE_PREF_SIZE);
-        table.setPrefWidth(1000);
-        table.setEditable(false);
         Field[] fields = ReserveStationTableRow.class.getDeclaredFields();
         for (Field field : fields) {
             String fieldName = field.getName();
@@ -282,10 +269,26 @@ public class MainApplication extends Application {
         ObservableList<ReserveStationTableRow> testList =
                 FXCollections.observableArrayList(
                         new ReserveStationTableRow("R1", "Add", "yes", "Execute", "", "Mem[34 + Regs[R2]", "Load2", "", ""));
-
         table.setItems(testList);
+
+        return configureTable(table, "Reserve Stations", 1000, 400);
+    }
+
+    private Node configureTable(TableView table, String name, double width, double height) {
+        VBox vbox = new VBox();
+
+        Label label = new Label(name);
+        label.setFont(new Font("Arial", 20));
+
+        table.setMinSize(Control.USE_PREF_SIZE, Control.USE_PREF_SIZE);
+        table.setMaxSize(Control.USE_PREF_SIZE, Control.USE_PREF_SIZE);
+        table.setPrefSize(width, height);
+        table.setEditable(false);
+        table.getStylesheets().addAll(this.getClass().getResource("table_style.css").toExternalForm());
+
         vbox.setSpacing(5);
         vbox.getChildren().addAll(label, table);
+
         return vbox;
     }
 
