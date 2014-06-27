@@ -41,8 +41,8 @@ public class StoreExecFlow extends AbstractExecFlow implements ExecFlow{
 
     @Override
     public int write(ReserveStation[] RS, RegisterStat[] registerStat, int[] Regs, Memory mem, int r) {
-        //mem.write(RS[r].A,RS[r].Vk);
+        int execCycle = mem.write(RS[r].A,RS[r].Vk);
         RS[r].busy = false;
-        return 1;
+        return execCycle;
     }
 }

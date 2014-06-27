@@ -30,9 +30,8 @@ public class LoadExecFlow extends AbstractExecFlow implements ExecFlow{
         // Step 1
         RS[r].A = RS[r].Vj + RS[r].A;
         // Step 2
-        //int execCycle = mem.read(RS[r].A);
-        return 4;
-        // return execCycle;
+        int execCycle = mem.read(RS[r].A);
+        return execCycle;
     }
 
     @Override
