@@ -19,30 +19,30 @@ public class FpExecFlow extends AbstractExecFlow implements ExecFlow {
     @Override
     public int issue(ReserveStation[] RS, RegisterStat[] registerStat, int[] Regs, Memory mem, int r) {
         if(registerStat[rs].Qi != null) {
-            RS[r].Vj = null;
+            RS[r].Vj = 0;
             RS[r].Qj = registerStat[rs].Qi;
         } else {
-            RS[r].Vj = String.valueOf(Regs[rs]);
+            RS[r].Vj = Regs[rs];
             RS[r].Qj = null;
         }
         if(rt != Cpu.NO_REGISTER){
             if(registerStat[rt].Qi != null) {
-                RS[r].Vk = null;
+                RS[r].Vk = 0;
                 RS[r].Qk = registerStat[rt].Qi;
             } else {
-                RS[r].Vj = String.valueOf(Regs[rt]);
-                RS[r].Qj = null;
+                RS[r].Vk = Regs[rt];
+                RS[r].Qk = null;
             }
         } else {
-            RS[r].Vk = String.valueOf(imm);
-            RS[r].Qj = null;
+            RS[r].Vk = imm;
+            RS[r].Qk = null;
         }
         RS[r].busy = true;
         registerStat[rd].Qi = RS[r];
         return 1;
     }
 
-    // TODO verify need of all these parameters
+    // TODO verify need of all these parameters after implement all the other Flows
     @Override
     public int execute(ReserveStation[] RS, RegisterStat[] registerStat, int[] Regs, Memory mem, int r) {
         Instruction instruction = getInstruction();

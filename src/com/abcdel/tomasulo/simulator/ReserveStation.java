@@ -16,8 +16,8 @@ public class ReserveStation {
     public String type;
     public boolean busy;
     public Instruction instruction;
-    public String Vj;
-    public String Vk;
+    public int Vj;
+    public int Vk;
     public ReserveStation Qj;
     public ReserveStation Qk;
     public int A;

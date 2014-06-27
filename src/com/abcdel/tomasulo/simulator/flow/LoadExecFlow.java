@@ -12,16 +12,47 @@ public class LoadExecFlow extends AbstractExecFlow implements ExecFlow{
 
     @Override
     public int issue(ReserveStation[] RS, RegisterStat[] registerStat, int[] Regs, Memory mem, int r) {
-        return 0;
+        if(registerStat[rs].Qi != null) {
+            RS[r].Vj = 0;
+            RS[r].Qj = registerStat[rs].Qi;
+        } else {
+            RS[r].Vj = Regs[rs];
+            RS[r].Qj = null;
+        }
+        RS[r].A = imm;
+        RS[r].busy = true;
+        registerStat[rt].Qi = RS[r];
+        return 1;
     }
 
     @Override
     public int execute(ReserveStation[] RS, RegisterStat[] registerStat, int[] Regs, Memory mem, int r) {
-        return 0;
+        // Step 1
+        RS[r].A = RS[r].Vj + RS[r].A;
+        // Step 2
+        //int execCycle = mem.read(RS[r].A);
+        return 4;
+        // return execCycle;
     }
 
     @Override
     public int write(ReserveStation[] RS, RegisterStat[] registerStat, int[] Regs, Memory mem, int r) {
-        return 0;
+        for(int i = 0 ; i < registerStat.length ; i++){
+            if ( registerStat[i].Qi == RS[r] ) {
+                // TODO implement the getResult method of Instruction
+                //Regs[i] = String.valueOf(getInstruction().result);
+                registerStat[i] = null;
+            }
+            if ( RS[i].Qj == RS[r] ) {
+                //RS[i].Vj = String.valueOf(getInstruction().result);
+                RS[i].Qj = null;
+            }
+            if ( RS[i].Qk == RS[r] ) {
+                //RS[i].Vk = String.valueOf(getInstruction().result);
+                RS[i].Qk = null;
+            }
+        }
+        RS[r].busy = false;
+        return 1;
     }
 }
