@@ -1,0 +1,5 @@
+.table-view .column-header{
+    -fx-background-color: gray;
+    -fx-font-size: 12;
+    -fx-font-family: "Arial";
+}
