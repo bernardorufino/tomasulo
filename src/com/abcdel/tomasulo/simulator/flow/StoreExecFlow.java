@@ -35,14 +35,16 @@ public class StoreExecFlow extends AbstractExecFlow implements ExecFlow{
     @Override
     public int execute(ReserveStation[] RS, RegisterStat[] registerStat, int[] Regs, Memory mem, int r) {
         RS[r].A = RS[r].Vj + RS[r].A;
-        // TODO understand why need 4 cycles to exec STORE if it is only a sum.
-        return 4;
+        // In the beginning, this value must be 4,
+        // and it will vary using the Project I
+        int execCycle = mem.checkAddress(RS[r].A);
+        return execCycle;
     }
 
     @Override
     public int write(ReserveStation[] RS, RegisterStat[] registerStat, int[] Regs, Memory mem, int r) {
-        int execCycle = mem.write(RS[r].A,RS[r].Vk);
+        mem.write(RS[r].A,RS[r].Vk);
         RS[r].busy = false;
-        return execCycle;
+        return 1;
     }
 }
