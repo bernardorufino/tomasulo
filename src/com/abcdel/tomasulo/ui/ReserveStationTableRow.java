@@ -25,7 +25,6 @@ public class ReserveStationTableRow {
         mQj = new SimpleStringProperty(qj);
         mQk = new SimpleStringProperty(qk);
         mA = new SimpleStringProperty(a);
-        
     }
 
     public StringProperty mIDProperty(){

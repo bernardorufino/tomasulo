@@ -57,11 +57,8 @@ public class MainApplication extends Application {
     @Override
     public void start(Stage stage) {
         mPrimaryStage = stage;
-
         mSimulator = new MockSimulator(this);
-
         Scene scene = new Scene(new Group(), 900, 600);
-
         ScrollPane sp = new ScrollPane();
         sp.setStyle("-fx-background: rgb(80,80,80);");
         sp.prefHeightProperty().bind(scene.heightProperty());
@@ -74,7 +71,6 @@ public class MainApplication extends Application {
         stage.setScene(scene);
 
         stage.setTitle("Main Application");
-        stage.setMaximized(true);
         stage.show();
     }
 
@@ -179,6 +175,9 @@ public class MainApplication extends Application {
         loadedFileLabel.setTextFill(Color.BLACK);
 
         toolBar.getItems().addAll(spacerLeft, buttonBar, spacerCenter, loadedFileLabel);
+        VBox registerBox = new VBox();
+        registerBox.setPadding(new Insets(10, 10, 10, 10));
+        registerBox.setSpacing(10);
         VBox vbox = new VBox();
         vbox.setPadding(new Insets(10, 10, 10, 10));
         vbox.setSpacing(10);
@@ -186,7 +185,10 @@ public class MainApplication extends Application {
         vbox.getChildren().add(createReserveStationTable());
         vbox.getChildren().add(createSecondaryTables());
 
+        registerBox.getChildren().add(createRegistersTable());
+
         borderPane.setCenter(vbox);
+        borderPane.setLeft(registerBox);
 
         mPlayButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -237,22 +239,48 @@ public class MainApplication extends Application {
 
     private Node createSecondaryTables() {
         final HBox hbox = new HBox();
-        hbox.setSpacing(5);
+        hbox.setSpacing(10);
         hbox.getChildren().add(createRecentlyUsedMemoryTable());
+        hbox.getChildren().add(createGeneralInformationTable());
         return hbox;
     }
 
-    private Node createRecentlyUsedMemoryTable() {
-        TableView table = new TableView();
-        Field[] fields = RecentlyUsedMemoryTableRow.class.getDeclaredFields();
+    private Node createRegistersTable() {
+        TableView<RegisteTableRow> table = new TableView<RegisteTableRow>();
+        Field[] fields = RegisteTableRow.class.getDeclaredFields();
         for (Field field : fields) {
             String fieldName = field.getName();
-            TableColumn column = new TableColumn(fieldName.substring(1, fieldName.length()));
-            column.setCellFactory(new PropertyValueFactory<ReserveStationTableRow, String>(fieldName));
+            TableColumn<RegisteTableRow, String> column = new TableColumn<RegisteTableRow, String>(fieldName.substring(1, fieldName.length()));
+            column.setCellValueFactory(new PropertyValueFactory<RegisteTableRow, String>(fieldName));
             column.prefWidthProperty().bind(table.widthProperty().divide(fields.length));
             table.getColumns().add(column);
         }
-        return configureTable(table, "Recently Used Memory", 1000, 400);
+        return configureTable(table, "Registers", 200, 850);
+    }
+
+    private Node createGeneralInformationTable() {
+        TableView<GeneralInformationTableRow> table = new TableView<GeneralInformationTableRow>();
+        Field[] fields = GeneralInformationTableRow.class.getDeclaredFields();
+        for(Field field : fields) {
+            String fieldName = field.getName();
+            TableColumn<GeneralInformationTableRow, String> column = new TableColumn<GeneralInformationTableRow, String>(fieldName.substring(1, fieldName.length()));
+            column.prefWidthProperty().bind(table.widthProperty().divide(fields.length));
+            table.getColumns().add(column);
+        }
+        return configureTable(table, "General Information", 500, 400);
+    }
+
+    private Node createRecentlyUsedMemoryTable() {
+        TableView<RecentlyUsedMemoryTableRow> table = new TableView<RecentlyUsedMemoryTableRow>();
+        Field[] fields = RecentlyUsedMemoryTableRow.class.getDeclaredFields();
+        for (Field field : fields) {
+            String fieldName = field.getName();
+            TableColumn<RecentlyUsedMemoryTableRow, String> column = new TableColumn<RecentlyUsedMemoryTableRow, String>(fieldName.substring(1, fieldName.length()));
+            column.setCellValueFactory(new PropertyValueFactory<RecentlyUsedMemoryTableRow, String>(fieldName));
+            column.prefWidthProperty().bind(table.widthProperty().divide(fields.length));
+            table.getColumns().add(column);
+        }
+        return configureTable(table, "Recently Used Memory", 500, 400);
     }
 
     private Node createReserveStationTable() {
