@@ -1,5 +1,6 @@
 package com.abcdel.tomasulo.ui;
 
+import com.abcdel.tomasulo.simulator.RegisterStat;
 import com.abcdel.tomasulo.simulator.ReserveStation;
 import javafx.application.Application;
 import com.abcdel.tomasulo.simulator.MockSimulator;
@@ -365,19 +366,20 @@ public class MainApplication extends Application {
         }
     }
 
-    public void bind(List<ReserveStation> reserveStations) {
-        ObservableList<ReserveStationTableRow> reserveStationTableRowObservableList= mReserveStationTable.getItems();
-        //reserveStationTableRowObservableList.removeAll(reserveStationTableRowObservableList);
+    public void bind(ReserveStation[] reserveStations, RegisterStat[] registerStats) {
         List<ReserveStationTableRow> reserveStationTableRows = new ArrayList<ReserveStationTableRow>();
         for (ReserveStation rs : reserveStations) {
             reserveStationTableRows.add((new ReserveStationTableRow.Builder()).from(rs).build());
         }
-        if(reserveStationTableRowObservableList.size() == 0) {
-            reserveStationTableRowObservableList.addAll(reserveStationTableRows);
-        } else {
-            FXCollections.copy(reserveStationTableRowObservableList, reserveStationTableRows);
-        }
+        mReserveStationTable.getItems().setAll(reserveStationTableRows);
 
+        List<RegisterTableRow> registerStatTableRows = new ArrayList<RegisterTableRow>();
+        int i = 0;
+        for (RegisterStat regStat : registerStats) {
+            registerStatTableRows.add((new RegisterTableRow.Builder()).from(regStat).setReg(i).build());
+            i++;
+        }
+        mRegisterTable.getItems().setAll(registerStatTableRows);
     }
 
     public enum ApplicationState {

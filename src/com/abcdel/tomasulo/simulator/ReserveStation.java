@@ -44,7 +44,8 @@ public class ReserveStation {
             this.name = name;
         }
 
-        public String toSring() {
+        @Override
+        public String toString() {
             return name;
         }
     }

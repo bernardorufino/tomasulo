@@ -83,7 +83,7 @@ public class ReserveStationTableRow {
             mType = rs.type;
             mBusy = String.valueOf(rs.busy);
             mInstruction = rs.instruction.getClass().getName();
-            mState = rs.state.toSring();
+            mState = rs.state.toString();
             mVj = String.valueOf(rs.Vj);
             mVk = String.valueOf(rs.Vk);
             mQj = rs.Qj.id;
