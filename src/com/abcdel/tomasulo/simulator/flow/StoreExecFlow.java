@@ -5,6 +5,8 @@ import com.abcdel.tomasulo.simulator.RegisterStat;
 import com.abcdel.tomasulo.simulator.ReserveStation;
 import com.abcdel.tomasulo.simulator.instruction.Instruction;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class StoreExecFlow extends AbstractExecFlow implements ExecFlow{
 
     public StoreExecFlow(Instruction instruction) {
@@ -43,7 +45,7 @@ public class StoreExecFlow extends AbstractExecFlow implements ExecFlow{
     }
 
     @Override
-    public int write(ReserveStation[] RS, RegisterStat[] registerStat, int[] Regs, Memory mem, int r) {
+    public int write(ReserveStation[] RS, RegisterStat[] registerStat, int[] Regs, Memory mem, int r, AtomicInteger pc) {
         mem.write(RS[r].A,RS[r].Vk);
         RS[r].busy = false;
         return 1;

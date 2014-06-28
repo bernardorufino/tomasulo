@@ -5,6 +5,8 @@ import com.abcdel.tomasulo.simulator.RegisterStat;
 import com.abcdel.tomasulo.simulator.ReserveStation;
 import com.abcdel.tomasulo.simulator.instruction.Instruction;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class LoadExecFlow extends AbstractExecFlow implements ExecFlow{
 
     private int mResult;
@@ -41,7 +43,7 @@ public class LoadExecFlow extends AbstractExecFlow implements ExecFlow{
     }
 
     @Override
-    public int write(ReserveStation[] RS, RegisterStat[] registerStat, int[] Regs, Memory mem, int r) {
+    public int write(ReserveStation[] RS, RegisterStat[] registerStat, int[] Regs, Memory mem, int r, AtomicInteger pc) {
         for(int i = 0 ; i < registerStat.length ; i++){
             if ( registerStat[i].Qi == RS[r] ) {
                 // TODO implement the getResult method of Instruction

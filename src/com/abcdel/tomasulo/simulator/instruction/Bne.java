@@ -2,7 +2,9 @@ package com.abcdel.tomasulo.simulator.instruction;
 
 import com.abcdel.tomasulo.simulator.Cpu;
 
-public class Bne extends IInstruction {
+import java.util.concurrent.atomic.AtomicInteger;
+
+public class Bne extends IInstruction implements Branch {
 
     public Bne(int rt, int rs, int imm) {
         super(rt, rs, imm);
@@ -16,5 +18,12 @@ public class Bne extends IInstruction {
     @Override
     public int assignee() {
         return Cpu.NO_REGISTER;
+    }
+
+    @Override
+    public void branch(int r1, int r2, AtomicInteger pc) {
+        if (r1 != r2) {
+            pc.set(pc.get() + 4 + imm);
+        }
     }
 }

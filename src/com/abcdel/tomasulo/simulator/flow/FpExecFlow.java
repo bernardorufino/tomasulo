@@ -9,6 +9,8 @@ import com.abcdel.tomasulo.simulator.instruction.Instruction;
 import com.abcdel.tomasulo.simulator.instruction.Mul;
 import com.sun.org.apache.xpath.internal.operations.Div;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import static com.google.common.base.Preconditions.checkState;
 
 public class FpExecFlow extends AbstractExecFlow implements ExecFlow {
@@ -59,7 +61,7 @@ public class FpExecFlow extends AbstractExecFlow implements ExecFlow {
     }
 
     @Override
-    public int write(ReserveStation[] RS, RegisterStat[] registerStat, int[] Regs, Memory mem, int r) {
+    public int write(ReserveStation[] RS, RegisterStat[] registerStat, int[] Regs, Memory mem, int r, AtomicInteger pc) {
         for(int i = 0 ; i < registerStat.length ; i++){
             if ( registerStat[i].Qi == RS[r] ) {
                 // TODO implement the getResult method of Instruction

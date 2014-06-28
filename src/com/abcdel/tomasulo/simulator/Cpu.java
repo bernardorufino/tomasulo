@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /* TODO: Handle branches */
 
@@ -21,10 +22,10 @@ public class Cpu {
     private final int[] mRegs = new int[REGISTERS];
     private final RegisterStat[] mRegisterStats = new RegisterStat[REGISTERS];
     private final Map<ReserveStation.Type, ReserveStation[]> mReserveStations = new HashMap<>();
-    private final Map<Instruction, InstructionInfo> mInstructionState = new WeakHashMap<>();
-
+    private final Map<Instruction, InstructionInfo> mInstructionInfo = new WeakHashMap<>();
     private final List<Instruction> mInstructions;
-    private int mProgramCounter = 0;
+    private AtomicInteger mProgramCounter = new AtomicInteger(0);
+    private int mBranches = 0;
 
     public Cpu(List<Instruction> instructions) {
         mInstructions = ImmutableList.copyOf(instructions);
@@ -34,36 +35,45 @@ public class Cpu {
     }
 
     public void nextStep() {
-        Instruction nextInstruction = mInstructions.get(mProgramCounter / 4);
-        ReserveStation[] reserveStations = mReserveStations.get(ReserveStation.Type.of(nextInstruction));
-        int freeRs = getFreeReserveStation(reserveStations);
-        if (freeRs != ReserveStation.NONE) {
-            mProgramCounter += 4;
-            ReserveStation rs = reserveStations[freeRs] = new ReserveStation(freeRs);
-            rs.instruction = nextInstruction;
-            ExecFlow execFlow = ExecFlowFactory.newInstance(nextInstruction);
-            mInstructionState.put(nextInstruction, new InstructionInfo(
-                    reserveStations, freeRs, execFlow, ExecFlow.Phase.ALLOCATED, 0));
+        if (mBranches == 0) {
+            Instruction nextInstruction = mInstructions.get(mProgramCounter.get() / 4);
+            ReserveStation.Type type = ReserveStation.Type.of(nextInstruction);
+            if (type == ReserveStation.Type.BRANCH) {
+                mBranches++;
+            }
+            ReserveStation[] reserveStations = mReserveStations.get(type);
+            int freeRs = getFreeReserveStation(reserveStations);
+            if (freeRs != ReserveStation.NONE) {
+                mProgramCounter.set(mProgramCounter.get() + 4);
+                ReserveStation rs = reserveStations[freeRs] = new ReserveStation(freeRs);
+                rs.instruction = nextInstruction;
+                ExecFlow execFlow = ExecFlowFactory.newInstance(nextInstruction);
+                mInstructionInfo.put(nextInstruction, new InstructionInfo(
+                        reserveStations, freeRs, execFlow, ExecFlow.Phase.ALLOCATED, 0));
+            }
         }
         Set<Instruction> toBeRemoved = new HashSet<>();
-        for (Map.Entry<Instruction, InstructionInfo> entry : mInstructionState.entrySet()) {
+        for (Map.Entry<Instruction, InstructionInfo> entry : mInstructionInfo.entrySet()) {
             Instruction instruction = entry.getKey();
             InstructionInfo info = entry.getValue();
             if (info.counter != 0) {
                 info.counter--;
             } else { // counter == 0
                 if (info.phase == ExecFlow.Phase.WRITE) {
+                    if (ReserveStation.Type.of(instruction) == ReserveStation.Type.BRANCH) {
+                        mBranches--;
+                    }
                     info.reserveStations[info.rsIndex] = null;
                     toBeRemoved.add(instruction);
                 } else {
                     info.phase = info.phase.next;
                     info.counter = info.execFlow.run(info.phase,
-                        info.reserveStations, mRegisterStats, mRegs, mMemory, info.rsIndex);
+                            info.reserveStations, mRegisterStats, mRegs, mMemory, info.rsIndex, mProgramCounter);
                 }
             }
         }
         for (Instruction instruction : toBeRemoved) {
-            mInstructionState.remove(instruction);
+            mInstructionInfo.remove(instruction);
         }
     }
 

@@ -2,7 +2,9 @@ package com.abcdel.tomasulo.simulator.instruction;
 
 import com.abcdel.tomasulo.simulator.Cpu;
 
-public class Jmp implements Instruction {
+import java.util.concurrent.atomic.AtomicInteger;
+
+public class Jmp implements Instruction, Branch {
 
     public int imm;
 
@@ -14,5 +16,10 @@ public class Jmp implements Instruction {
     @Override
     public int assignee() {
         return Cpu.NO_REGISTER;
+    }
+
+    @Override
+    public void branch(int r1, int r2, AtomicInteger pc) {
+        pc.set(imm);
     }
 }

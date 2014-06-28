@@ -7,6 +7,8 @@ import com.abcdel.tomasulo.simulator.ReserveStation;
 import com.abcdel.tomasulo.simulator.instruction.IInstruction;
 import com.abcdel.tomasulo.simulator.instruction.Instruction;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import static com.google.common.base.Preconditions.checkState;
 
 public abstract class AbstractExecFlow implements ExecFlow {
@@ -31,11 +33,11 @@ public abstract class AbstractExecFlow implements ExecFlow {
     }
 
     @Override
-    public int run(Phase phase, ReserveStation[] RS, RegisterStat[] registerStat, int[] Regs, Memory mem, int r) {
+    public int run(Phase phase, ReserveStation[] RS, RegisterStat[] registerStat, int[] Regs, Memory mem, int r, AtomicInteger pc) {
         switch (phase) {
             case ISSUE: return issue(RS, registerStat, Regs, r);
             case EXECUTION: return execute(RS, mem, r);
-            case WRITE: return write(RS, registerStat, Regs, mem, r);
+            case WRITE: return write(RS, registerStat, Regs, mem, r, pc);
         }
         throw new AssertionError();
     }

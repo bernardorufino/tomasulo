@@ -55,7 +55,8 @@ public class ReserveStation {
         UNDEFINED(0),
         LOAD(5),
         ADD(3),
-        MULT(3);
+        MULT(3),
+        BRANCH(3);
 
         public static Type of(Instruction instruction) {
             return INSTRUCTION_MAP.get(instruction.getClass());
