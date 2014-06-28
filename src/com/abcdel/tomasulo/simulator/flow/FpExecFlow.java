@@ -1,7 +1,7 @@
 package com.abcdel.tomasulo.simulator.flow;
 
 import com.abcdel.tomasulo.simulator.Cpu;
-import com.abcdel.tomasulo.simulator.Memory;
+import com.abcdel.tomasulo.simulator.memory.Memory;
 import com.abcdel.tomasulo.simulator.RegisterStat;
 import com.abcdel.tomasulo.simulator.ReserveStation;
 import com.abcdel.tomasulo.simulator.instruction.Instruction;
@@ -9,6 +9,7 @@ import com.abcdel.tomasulo.simulator.instruction.Mul;
 import com.sun.org.apache.xpath.internal.operations.Div;
 
 public class FpExecFlow extends AbstractExecFlow implements ExecFlow {
+
     private int rd;
 
     public FpExecFlow(Instruction instruction) {
@@ -58,6 +59,7 @@ public class FpExecFlow extends AbstractExecFlow implements ExecFlow {
                 //Regs[i] = String.valueOf(getInstruction().result);
                 registerStat[i] = null;
             }
+            // TODO: Doesn't accessing RS[] require another loop?
             if ( RS[i].Qj == RS[r] ) {
                 //RS[i].Vj = String.valueOf(getInstruction().result);
                 RS[i].Qj = null;

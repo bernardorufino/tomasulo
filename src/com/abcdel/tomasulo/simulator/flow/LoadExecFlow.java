@@ -1,11 +1,12 @@
 package com.abcdel.tomasulo.simulator.flow;
 
-import com.abcdel.tomasulo.simulator.Memory;
+import com.abcdel.tomasulo.simulator.memory.Memory;
 import com.abcdel.tomasulo.simulator.RegisterStat;
 import com.abcdel.tomasulo.simulator.ReserveStation;
 import com.abcdel.tomasulo.simulator.instruction.Instruction;
 
 public class LoadExecFlow extends AbstractExecFlow implements ExecFlow{
+
     public LoadExecFlow(Instruction instruction) {
         super(instruction);
     }
@@ -30,7 +31,7 @@ public class LoadExecFlow extends AbstractExecFlow implements ExecFlow{
         // Step 1
         RS[r].A = RS[r].Vj + RS[r].A;
         // Step 2
-        int execCycle = mem.checkAddress(RS[r].A);
+        int execCycle = mem.cost(RS[r].A);
         // In the beginning, this value must be 4,
         // and it will vary using the Project I
         return execCycle;
@@ -44,6 +45,7 @@ public class LoadExecFlow extends AbstractExecFlow implements ExecFlow{
                 //Regs[i] = String.valueOf(getInstruction().result);
                 registerStat[i] = null;
             }
+            // TODO: Doesn't accessing RS[] require another loop?
             if ( RS[i].Qj == RS[r] ) {
                 //RS[i].Vj = String.valueOf(getInstruction().result);
                 RS[i].Qj = null;

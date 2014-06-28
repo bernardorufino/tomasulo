@@ -1,11 +1,12 @@
 package com.abcdel.tomasulo.simulator.flow;
 
-import com.abcdel.tomasulo.simulator.Memory;
+import com.abcdel.tomasulo.simulator.memory.Memory;
 import com.abcdel.tomasulo.simulator.RegisterStat;
 import com.abcdel.tomasulo.simulator.ReserveStation;
 import com.abcdel.tomasulo.simulator.instruction.Instruction;
 
 public class StoreExecFlow extends AbstractExecFlow implements ExecFlow{
+
     public StoreExecFlow(Instruction instruction) {
         super(instruction);
     }
@@ -37,7 +38,7 @@ public class StoreExecFlow extends AbstractExecFlow implements ExecFlow{
         RS[r].A = RS[r].Vj + RS[r].A;
         // In the beginning, this value must be 4,
         // and it will vary using the Project I
-        int execCycle = mem.checkAddress(RS[r].A);
+        int execCycle = mem.cost(RS[r].A);
         return execCycle;
     }
 
