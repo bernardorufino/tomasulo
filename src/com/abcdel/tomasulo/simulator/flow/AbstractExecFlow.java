@@ -10,13 +10,13 @@ import com.abcdel.tomasulo.simulator.instruction.Instruction;
 import static com.google.common.base.Preconditions.checkState;
 
 public abstract class AbstractExecFlow implements ExecFlow {
-    private Instruction instruction;
+    private Instruction mInstruction;
     protected int rs;
     protected int rt;
     protected int imm;
 
     public AbstractExecFlow(Instruction instruction){
-        this.instruction = instruction;
+        mInstruction = instruction;
 
         int[] dependencies = instruction.dependencies();
         rs = dependencies[0];
@@ -41,6 +41,6 @@ public abstract class AbstractExecFlow implements ExecFlow {
     }
 
     protected Instruction getInstruction() {
-        return instruction;
+        return mInstruction;
     }
 }

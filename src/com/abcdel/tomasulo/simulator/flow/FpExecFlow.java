@@ -1,6 +1,7 @@
 package com.abcdel.tomasulo.simulator.flow;
 
 import com.abcdel.tomasulo.simulator.Cpu;
+import com.abcdel.tomasulo.simulator.instruction.Executable;
 import com.abcdel.tomasulo.simulator.memory.Memory;
 import com.abcdel.tomasulo.simulator.RegisterStat;
 import com.abcdel.tomasulo.simulator.ReserveStation;
@@ -8,9 +9,12 @@ import com.abcdel.tomasulo.simulator.instruction.Instruction;
 import com.abcdel.tomasulo.simulator.instruction.Mul;
 import com.sun.org.apache.xpath.internal.operations.Div;
 
+import static com.google.common.base.Preconditions.checkState;
+
 public class FpExecFlow extends AbstractExecFlow implements ExecFlow {
 
     private int rd;
+    private int mResult;
 
     public FpExecFlow(Instruction instruction) {
         super(instruction);
@@ -46,6 +50,9 @@ public class FpExecFlow extends AbstractExecFlow implements ExecFlow {
     @Override
     public int execute(ReserveStation[] RS, Memory mem, int r) {
         Instruction instruction = getInstruction();
+        checkState(instruction instanceof Executable, "instruction is not executable");
+        Executable executable = (Executable) instruction;
+        mResult = executable.execute(RS[r].Vj, RS[r].Vk);
         if(instruction instanceof Div) return 5;
         if(instruction instanceof Mul) return 3;
         return 1;
@@ -56,16 +63,16 @@ public class FpExecFlow extends AbstractExecFlow implements ExecFlow {
         for(int i = 0 ; i < registerStat.length ; i++){
             if ( registerStat[i].Qi == RS[r] ) {
                 // TODO implement the getResult method of Instruction
-                //Regs[i] = String.valueOf(getInstruction().result);
+                Regs[i] = mResult;
                 registerStat[i] = null;
             }
             // TODO: Doesn't accessing RS[] require another loop?
             if ( RS[i].Qj == RS[r] ) {
-                //RS[i].Vj = String.valueOf(getInstruction().result);
+                RS[i].Vj = mResult;
                 RS[i].Qj = null;
             }
             if ( RS[i].Qk == RS[r] ) {
-                //RS[i].Vk = String.valueOf(getInstruction().result);
+                RS[i].Vk = mResult;
                 RS[i].Qk = null;
             }
         }
