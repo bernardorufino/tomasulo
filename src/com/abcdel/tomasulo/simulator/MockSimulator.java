@@ -1,8 +1,9 @@
 package com.abcdel.tomasulo.simulator;
 
 import com.abcdel.tomasulo.simulator.instruction.Add;
-import com.abcdel.tomasulo.ui.MainApplication;
-import com.abcdel.tomasulo.ui.MainApplication.*;
+import com.abcdel.tomasulo.ui.application.MainApplication;
+import com.abcdel.tomasulo.ui.application.MainApplication.*;
+import com.abcdel.tomasulo.ui.application.handlers.ApplicationToolbarHandler;
 import javafx.application.Platform;
 
 import java.io.File;
@@ -11,7 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-public class MockSimulator implements ApplicationListener, Simulator {
+public class MockSimulator implements ApplicationToolbarHandler.ApplicationToolbarListener, Simulator {
 
     private MainApplication mApplication;
     private List<ReserveStation> mReserveStations;
@@ -27,7 +28,7 @@ public class MockSimulator implements ApplicationListener, Simulator {
         for (int i = 0; i < 1; i++) {
             mRegisterStats.add(new RegisterStat());
         }
-        application.addListener(this);
+        application.addToolbarListener(this);
     }
 
     @Override
