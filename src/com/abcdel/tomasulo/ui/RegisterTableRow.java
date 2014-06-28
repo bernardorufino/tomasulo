@@ -3,12 +3,12 @@ package com.abcdel.tomasulo.ui;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-public class RegisteTableRow {
+public class RegisterTableRow {
   private StringProperty mReg;
   private StringProperty mQ;
   private StringProperty mV;
 
-  public RegisteTableRow(String reg, String q, String v) {
+  public RegisterTableRow(String reg, String q, String v) {
     mReg = new SimpleStringProperty(reg);
     mQ = new SimpleStringProperty(q);
     mV = new SimpleStringProperty(v);

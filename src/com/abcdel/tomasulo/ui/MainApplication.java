@@ -1,10 +1,11 @@
 package com.abcdel.tomasulo.ui;
 
+import com.abcdel.tomasulo.simulator.ReserveStation;
 import javafx.application.Application;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import com.abcdel.tomasulo.simulator.MockSimulator;
 import com.abcdel.tomasulo.simulator.Simulator;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -45,10 +46,15 @@ public class MainApplication extends Application {
     private Button mFileButton;
     private ImageView mPlayIcon;
     private ImageView mPauseIcon;
+    private TableView<ReserveStationTableRow> mReserveStationTable;
+    private TableView<RegisterTableRow> mRegisterTable;
+    private TableView<RecentlyUsedMemoryTableRow> mRecentlyUsedMemomryTable;
+    private TableView<GeneralInformationTableRow> mGeneralInformationTable;
 
     private final List<ApplicationListener> mListeners = new ArrayList<ApplicationListener>();
     private ApplicationState mApplicationState;
     private Simulator mSimulator;
+
 
     public static void main(String[] args) {
         launch(args);
@@ -246,60 +252,54 @@ public class MainApplication extends Application {
     }
 
     private Node createRegistersTable() {
-        TableView<RegisteTableRow> table = new TableView<RegisteTableRow>();
-        Field[] fields = RegisteTableRow.class.getDeclaredFields();
+        mRegisterTable = new TableView<RegisterTableRow>();
+        Field[] fields = RegisterTableRow.class.getDeclaredFields();
         for (Field field : fields) {
             String fieldName = field.getName();
-            TableColumn<RegisteTableRow, String> column = new TableColumn<RegisteTableRow, String>(fieldName.substring(1, fieldName.length()));
-            column.setCellValueFactory(new PropertyValueFactory<RegisteTableRow, String>(fieldName));
-            column.prefWidthProperty().bind(table.widthProperty().divide(fields.length));
-            table.getColumns().add(column);
+            TableColumn<RegisterTableRow, String> column = new TableColumn<RegisterTableRow, String>(fieldName.substring(1, fieldName.length()));
+            column.setCellValueFactory(new PropertyValueFactory<RegisterTableRow, String>(fieldName));
+            column.prefWidthProperty().bind(mRegisterTable.widthProperty().divide(fields.length));
+            mRegisterTable.getColumns().add(column);
         }
-        return configureTable(table, "Registers", 200, 850);
+        return configureTable(mRegisterTable, "Registers", 200, 850);
     }
 
     private Node createGeneralInformationTable() {
-        TableView<GeneralInformationTableRow> table = new TableView<GeneralInformationTableRow>();
+        mGeneralInformationTable = new TableView<GeneralInformationTableRow>();
         Field[] fields = GeneralInformationTableRow.class.getDeclaredFields();
         for(Field field : fields) {
             String fieldName = field.getName();
             TableColumn<GeneralInformationTableRow, String> column = new TableColumn<GeneralInformationTableRow, String>(fieldName.substring(1, fieldName.length()));
-            column.prefWidthProperty().bind(table.widthProperty().divide(fields.length));
-            table.getColumns().add(column);
+            column.prefWidthProperty().bind(mGeneralInformationTable.widthProperty().divide(fields.length));
+            mGeneralInformationTable.getColumns().add(column);
         }
-        return configureTable(table, "General Information", 500, 400);
+        return configureTable(mGeneralInformationTable, "General Information", 500, 400);
     }
 
     private Node createRecentlyUsedMemoryTable() {
-        TableView<RecentlyUsedMemoryTableRow> table = new TableView<RecentlyUsedMemoryTableRow>();
+        mRecentlyUsedMemomryTable = new TableView<RecentlyUsedMemoryTableRow>();
         Field[] fields = RecentlyUsedMemoryTableRow.class.getDeclaredFields();
         for (Field field : fields) {
             String fieldName = field.getName();
             TableColumn<RecentlyUsedMemoryTableRow, String> column = new TableColumn<RecentlyUsedMemoryTableRow, String>(fieldName.substring(1, fieldName.length()));
             column.setCellValueFactory(new PropertyValueFactory<RecentlyUsedMemoryTableRow, String>(fieldName));
-            column.prefWidthProperty().bind(table.widthProperty().divide(fields.length));
-            table.getColumns().add(column);
+            column.prefWidthProperty().bind(mRecentlyUsedMemomryTable.widthProperty().divide(fields.length));
+            mRecentlyUsedMemomryTable.getColumns().add(column);
         }
-        return configureTable(table, "Recently Used Memory", 500, 400);
+        return configureTable(mRecentlyUsedMemomryTable, "Recently Used Memory", 500, 400);
     }
 
     private Node createReserveStationTable() {
-        TableView<ReserveStationTableRow> table = new TableView<ReserveStationTableRow>();
+        mReserveStationTable = new TableView<ReserveStationTableRow>();
         Field[] fields = ReserveStationTableRow.class.getDeclaredFields();
         for (Field field : fields) {
             String fieldName = field.getName();
             TableColumn<ReserveStationTableRow, String> column = new TableColumn<ReserveStationTableRow, String>(fieldName.substring(1, fieldName.length()));
             column.setCellValueFactory(new PropertyValueFactory<ReserveStationTableRow, String>(fieldName));
-            column.prefWidthProperty().bind(table.widthProperty().divide(fields.length));
-            table.getColumns().add(column);
+            column.prefWidthProperty().bind(mReserveStationTable.widthProperty().divide(fields.length));
+            mReserveStationTable.getColumns().add(column);
         }
-
-        ObservableList<ReserveStationTableRow> testList =
-                FXCollections.observableArrayList(
-                        new ReserveStationTableRow("R1", "Add", "yes", "Execute", "", "Mem[34 + Regs[R2]", "Load2", "", ""));
-        table.setItems(testList);
-
-        return configureTable(table, "Reserve Stations", 1000, 400);
+        return configureTable(mReserveStationTable, "Reserve Stations", 1000, 400);
     }
 
     private Node configureTable(TableView table, String name, double width, double height) {
@@ -363,6 +363,21 @@ public class MainApplication extends Application {
             default:
                 break;
         }
+    }
+
+    public void bind(List<ReserveStation> reserveStations) {
+        ObservableList<ReserveStationTableRow> reserveStationTableRowObservableList= mReserveStationTable.getItems();
+        //reserveStationTableRowObservableList.removeAll(reserveStationTableRowObservableList);
+        List<ReserveStationTableRow> reserveStationTableRows = new ArrayList<ReserveStationTableRow>();
+        for (ReserveStation rs : reserveStations) {
+            reserveStationTableRows.add((new ReserveStationTableRow.Builder()).from(rs).build());
+        }
+        if(reserveStationTableRowObservableList.size() == 0) {
+            reserveStationTableRowObservableList.addAll(reserveStationTableRows);
+        } else {
+            FXCollections.copy(reserveStationTableRowObservableList, reserveStationTableRows);
+        }
+
     }
 
     public enum ApplicationState {

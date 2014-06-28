@@ -21,6 +21,7 @@ public class ReserveStation {
     public ReserveStation Qj;
     public ReserveStation Qk;
     public int A;
+    public State state;
 
     public static enum Type {
         LOAD(5),
@@ -31,6 +32,20 @@ public class ReserveStation {
 
         private Type(int size) {
             this.size = size;
+        }
+    }
+
+    public static enum State {
+        ISSUE("Issue"), EXECUTE("Execute"), WRITE("Write");
+
+        private final String name;
+
+        private State(String name) {
+            this.name = name;
+        }
+
+        public String toSring() {
+            return name;
         }
     }
 }
