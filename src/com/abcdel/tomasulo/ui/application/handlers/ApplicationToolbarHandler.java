@@ -20,7 +20,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ApplicationToolbarHandler implements ApplicationHandler {
+public class ApplicationToolbarHandler {
 
     private static final int BUTTON_IMAGE_DIMENSION = 15;
 
@@ -48,7 +48,6 @@ public class ApplicationToolbarHandler implements ApplicationHandler {
         updatePlayIcon(applicationState);
     }
 
-    @Override
     public Node createPane() {
         ToolBar toolBar = new ToolBar();
 
