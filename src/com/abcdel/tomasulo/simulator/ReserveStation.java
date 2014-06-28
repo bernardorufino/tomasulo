@@ -32,6 +32,7 @@ public class ReserveStation {
                     .put(Sw.class, Type.LOAD)
                     .build();
 
+    private final int index;
     public boolean busy;
     public Instruction instruction;
     public int Vj;
@@ -40,6 +41,15 @@ public class ReserveStation {
     public ReserveStation Qk;
     public int A;
     public State state;
+
+    public ReserveStation(int index) {
+        this.index = index;
+    }
+
+    public String getId() {
+        Type type = Type.of(instruction);
+        return String.format("%s%d", type, index);
+    }
 
     public static enum Type {
         UNDEFINED(0),

@@ -40,7 +40,7 @@ public class RegisterTableRow {
         }
 
         public Builder from(RegisterStat registerStat) {
-            mQ = registerStat.Qi.id;
+            mQ = registerStat.Qi.getId();
             mV = String.valueOf(registerStat.Vi);
             return this;
         }

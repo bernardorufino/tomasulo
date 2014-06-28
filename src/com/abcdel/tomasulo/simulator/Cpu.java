@@ -39,7 +39,7 @@ public class Cpu {
         int freeRs = getFreeReserveStation(reserveStations);
         if (freeRs != ReserveStation.NONE) {
             mProgramCounter += 4;
-            ReserveStation rs = reserveStations[freeRs] = new ReserveStation();
+            ReserveStation rs = reserveStations[freeRs] = new ReserveStation(freeRs);
             rs.instruction = nextInstruction;
             ExecFlow execFlow = ExecFlowFactory.newInstance(nextInstruction);
             mInstructionState.put(nextInstruction, new InstructionInfo(
