@@ -1,4 +1,4 @@
-package com.abcdel.tomasulo.ui;
+package com.abcdel.tomasulo.ui.application.handlers.TableRowData;
 
 import com.abcdel.tomasulo.simulator.ReserveStation;
 import javafx.beans.property.SimpleStringProperty;

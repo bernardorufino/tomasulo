@@ -3,6 +3,7 @@ package com.abcdel.tomasulo.ui.application;
 import com.abcdel.tomasulo.simulator.RegisterStat;
 import com.abcdel.tomasulo.simulator.ReserveStation;
 import com.abcdel.tomasulo.ui.application.handlers.ApplicationContentHandler;
+import com.abcdel.tomasulo.ui.application.handlers.ApplicationHandler;
 import com.abcdel.tomasulo.ui.application.handlers.ApplicationToolbarHandler;
 import javafx.application.Application;
 import com.abcdel.tomasulo.simulator.MockSimulator;
@@ -17,12 +18,11 @@ import javafx.stage.Stage;
 public class MainApplication extends Application {
 
     private Stage mMainStage;
-    private ApplicationToolbarHandler mApplicationToolbarHandler;
-    private ApplicationContentHandler mApplicationContentHandler;
+    private ApplicationHandler mApplicationToolbarHandler;
+    private ApplicationHandler mApplicationContentHandler;
 
     private ApplicationState mApplicationState;
     private Simulator mSimulator;
-
 
     public static void main(String[] args) {
         launch(args);
@@ -54,7 +54,6 @@ public class MainApplication extends Application {
         stage.show();
     }
 
-
     public ApplicationState getApplicationState() {
         return mApplicationState;
     }
@@ -69,17 +68,15 @@ public class MainApplication extends Application {
 
     public void setApplicationState(ApplicationState applicationState) {
         mApplicationState = applicationState;
+        mApplicationContentHandler.updateApplicationState(mApplicationState);
         mApplicationToolbarHandler.updateApplicationState(mApplicationState);
     }
-
 
     public void bind(ReserveStation[] reserveStations, RegisterStat[] registerStats) {
         mApplicationContentHandler.bind(reserveStations, registerStats);
     }
 
-
     private Node createContentPane() {
-
         BorderPane borderPane = new BorderPane();
         borderPane.setTop(mApplicationToolbarHandler.createPane());
 
@@ -94,5 +91,7 @@ public class MainApplication extends Application {
         STAND_BY, LOADED, RUNNING, PAUSED, STEPPING
     }
 
+    public static interface ApplicationListener {
+    }
 }
 

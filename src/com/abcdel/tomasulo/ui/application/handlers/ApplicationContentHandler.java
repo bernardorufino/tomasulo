@@ -2,10 +2,11 @@ package com.abcdel.tomasulo.ui.application.handlers;
 
 import com.abcdel.tomasulo.simulator.RegisterStat;
 import com.abcdel.tomasulo.simulator.ReserveStation;
-import com.abcdel.tomasulo.ui.GeneralInformationTableRow;
-import com.abcdel.tomasulo.ui.RecentlyUsedMemoryTableRow;
-import com.abcdel.tomasulo.ui.RegisterTableRow;
-import com.abcdel.tomasulo.ui.ReserveStationTableRow;
+import com.abcdel.tomasulo.ui.application.MainApplication;
+import com.abcdel.tomasulo.ui.application.handlers.TableRowData.GeneralInformationTableRow;
+import com.abcdel.tomasulo.ui.application.handlers.TableRowData.RecentlyUsedMemoryTableRow;
+import com.abcdel.tomasulo.ui.application.handlers.TableRowData.RegisterTableRow;
+import com.abcdel.tomasulo.ui.application.handlers.TableRowData.ReserveStationTableRow;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Control;
@@ -22,13 +23,14 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ApplicationContentHandler {
+public class ApplicationContentHandler implements ApplicationHandler {
 
     private TableView<ReserveStationTableRow> mReserveStationTable;
     private TableView<RegisterTableRow> mRegisterTable;
     private TableView<RecentlyUsedMemoryTableRow> mRecentlyUsedMemomryTable;
     private TableView<GeneralInformationTableRow> mGeneralInformationTable;
 
+    @Override
     public Node createPane() {
         BorderPane borderPane = new BorderPane();
 
@@ -49,6 +51,7 @@ public class ApplicationContentHandler {
         return borderPane;
     }
 
+    @Override
     public void bind(ReserveStation[] reserveStations, RegisterStat[] registerStats) {
         List<ReserveStationTableRow> reserveStationTableRows = new ArrayList<ReserveStationTableRow>();
         for (ReserveStation rs : reserveStations) {
@@ -63,6 +66,21 @@ public class ApplicationContentHandler {
             i++;
         }
         mRegisterTable.getItems().setAll(registerStatTableRows);
+    }
+
+    @Override
+    public void updateApplicationState(MainApplication.ApplicationState applicationState) {
+        if (applicationState == MainApplication.ApplicationState.LOADED) {
+            mReserveStationTable.getItems().clear();
+            mRecentlyUsedMemomryTable.getItems().clear();
+            mGeneralInformationTable.getItems().clear();
+            mRegisterTable.getItems().clear();
+        }
+    }
+
+    @Override
+    public void addListener(MainApplication.ApplicationListener listener) {
+        // No listener are defined
     }
 
     private Node createSecondaryTables() {
@@ -141,5 +159,4 @@ public class ApplicationContentHandler {
 
         return vbox;
     }
-
 }

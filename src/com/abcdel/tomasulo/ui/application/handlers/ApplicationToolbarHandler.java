@@ -1,5 +1,7 @@
 package com.abcdel.tomasulo.ui.application.handlers;
 
+import com.abcdel.tomasulo.simulator.RegisterStat;
+import com.abcdel.tomasulo.simulator.ReserveStation;
 import com.abcdel.tomasulo.ui.application.MainApplication;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -14,13 +16,14 @@ import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ApplicationToolbarHandler {
+public class ApplicationToolbarHandler implements ApplicationHandler {
 
     private static final int BUTTON_IMAGE_DIMENSION = 15;
 
@@ -39,15 +42,7 @@ public class ApplicationToolbarHandler {
         mApplication = application;
     }
 
-    public void addListener(ApplicationToolbarListener listener) {
-        mListeners.add(listener);
-    }
-
-    public void updateApplicationState(MainApplication.ApplicationState applicationState){
-        updateEnabledButtons(applicationState);
-        updatePlayIcon(applicationState);
-    }
-
+    @Override
     public Node createPane() {
         ToolBar toolBar = new ToolBar();
 
@@ -68,73 +63,64 @@ public class ApplicationToolbarHandler {
         return toolBar;
     }
 
+    @Override
+    public void addListener(MainApplication.ApplicationListener listener) {
+        if (!(listener instanceof  ApplicationToolbarListener)) {
+            return;
+        }
+        ApplicationToolbarListener toolbarListener = (ApplicationToolbarListener) listener;
+        mListeners.add(toolbarListener);
+    }
+
+    @Override
+    public void bind(ReserveStation[] reserveStations, RegisterStat[] registerStats) {
+        // No data to be updated
+    }
+
+    @Override
+    public void updateApplicationState(MainApplication.ApplicationState applicationState){
+        updateEnabledButtons(applicationState);
+        updatePlayIcon(applicationState);
+    }
+
     private void createButtons() {
         mPlayButton = new Button();
+        mPlayIcon = fetchIcon("play.png");
+        mPauseIcon = fetchIcon("pause.png");
+        updatePlayIcon(mApplication.getApplicationState());
         mPlayButton.getStyleClass().addAll("first");
 
-        mPlayIcon = null;
-        mPauseIcon = null;
-
-        try {
-            mPlayIcon = new ImageView(new Image(
-                    new FileInputStream("res/icons/play.png"),
-                    BUTTON_IMAGE_DIMENSION,
-                    BUTTON_IMAGE_DIMENSION,
-                    true,
-                    true));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            mPauseIcon = new ImageView(new Image(
-                    new FileInputStream("res/icons/pause.png"),
-                    BUTTON_IMAGE_DIMENSION,
-                    BUTTON_IMAGE_DIMENSION,
-                    true,
-                    true));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        updatePlayIcon(mApplication.getApplicationState());
-
         mStopButton = new Button();
-        try {
-            mStopButton.setGraphic(new ImageView(new Image(
-                    new FileInputStream("res/icons/stop.png"),
-                    BUTTON_IMAGE_DIMENSION,
-                    BUTTON_IMAGE_DIMENSION,
-                    true,
-                    true)));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        setButtonIcon(mStopButton, "stop.png");
 
         mStepButton = new Button();
-        try {
-            mStepButton.setGraphic(new ImageView(new Image(
-                    new FileInputStream("res/icons/step.png"),
-                    BUTTON_IMAGE_DIMENSION,
-                    BUTTON_IMAGE_DIMENSION,
-                    true,
-                    true)));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        setButtonIcon(mStepButton, "step.png");
 
         mFileButton = new Button();
+        setButtonIcon(mFileButton, "folder.png");
+        mFileButton.getStyleClass().addAll("last", "capsule");
+    }
+
+    private void setButtonIcon(Button button, String iconName) {
+        ImageView icon = fetchIcon(iconName);
+        if (icon != null) {
+            button.setGraphic(icon);
+        }
+    }
+
+    private ImageView fetchIcon(String iconName) {
+        ImageView icon = null;
         try {
-            mFileButton.setGraphic(new ImageView(new Image(
-                    new FileInputStream("res/icons/folder.png"),
+            icon = new ImageView(new Image(
+                    new FileInputStream("res/icons/" + iconName),
                     BUTTON_IMAGE_DIMENSION,
                     BUTTON_IMAGE_DIMENSION,
                     true,
-                    true)));
+                    true));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        mFileButton.getStyleClass().addAll("last", "capsule");
+        return icon;
     }
 
     private void setButtonListeners() {
@@ -227,7 +213,7 @@ public class ApplicationToolbarHandler {
     }
 
 
-    public interface ApplicationToolbarListener {
+    public interface ApplicationToolbarListener extends MainApplication.ApplicationListener {
         public void onFileLoaded(File file);
 
         public void onPlay();
