@@ -71,7 +71,9 @@ public class ApplicationContentHandler implements ApplicationHandler {
         genInfoTableRowsBuilder.from(data);
         mGeneralInformationTable.getItems().setAll(genInfoTableRowsBuilder.buildAll());
 
-
+        RecentlyUsedMemoryTableRow.Builder recentlyUsedMemoryRowsBuilder = new RecentlyUsedMemoryTableRow.Builder();
+        recentlyUsedMemoryRowsBuilder.from(data.recentlyUsedMemory);
+        mRecentlyUsedMemoryTable.getItems().setAll(recentlyUsedMemoryRowsBuilder.buildAll());
     }
 
     @Override

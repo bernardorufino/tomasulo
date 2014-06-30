@@ -14,6 +14,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class MainApplication extends Application {
@@ -103,6 +104,7 @@ public class MainApplication extends Application {
         public String PC;
         public int concludedInstructionCount;
         public double CPI;
+        public HashMap<Integer, Integer> recentlyUsedMemory;
     }
 }
 

@@ -12,6 +12,7 @@ import com.google.common.collect.ImmutableMap;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import static com.abcdel.tomasulo.ui.application.MainApplication.ApplicationState;
@@ -88,6 +89,11 @@ public class UiSimulator implements ApplicationToolbarHandler.ApplicationToolbar
         applicationData.reserveStations = rsArray;
         applicationData.registerStats = mCpu.registerStatus;
         applicationData.clock = mSimulator.getClock();
+        applicationData.CPI = 1.03; // TODO: insert actual value
+        applicationData.concludedInstructionCount = 5; // TODO: insert actual value
+        applicationData.PC = String.valueOf(10000); // TODO: insert actual PC
+        applicationData.recentlyUsedMemory = new HashMap<>(); // TODO: Take this from the actual memory
+        applicationData.recentlyUsedMemory.put(10, 20);
         mApplication.bind(applicationData);
     }
 
