@@ -61,7 +61,6 @@ public class StoreExecutionFlow extends ExecutionFlow {
 
     @Override
     protected int write() {
-        // mMemory.write(mReserveStation.A, mReserveStation.Vk);
         mReserveStation.busy = false;
         return 0;
     }

@@ -37,7 +37,6 @@ public class LoadExecutionFlow extends ExecutionFlow {
         // Step 1
         mReserveStation.A = mReserveStation.Vj + mReserveStation.A;
         // Step 2
-
         mResult = mMemory.read(mReserveStation.A);
         int cycles = mMemory.getLastAccessCost();
         // Pop queue

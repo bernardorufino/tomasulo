@@ -6,6 +6,6 @@ public interface Memory {
 
     public void write(int address, int value);
 
-    // return how many cycles it will cost to access this memory address
+    // return how many cycles the last memory access has cost
     public int getLastAccessCost();
 }

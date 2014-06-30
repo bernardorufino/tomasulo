@@ -3,6 +3,7 @@ package com.abcdel.tomasulo.simulator;
 import com.abcdel.tomasulo.simulator.instruction.*;
 import com.abcdel.tomasulo.simulator.memory.ConstantUniformAccessTimeMemory;
 import com.abcdel.tomasulo.simulator.memory.Memory;
+import com.abcdel.tomasulo.simulator.memory.TwoLevelCachedMemoryDecorator;
 import com.abcdel.tomasulo.ui.application.MainApplication;
 import com.abcdel.tomasulo.ui.application.handlers.ApplicationToolbarHandler;
 import com.google.common.collect.ImmutableList;
