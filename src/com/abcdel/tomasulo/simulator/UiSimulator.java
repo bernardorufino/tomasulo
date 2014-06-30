@@ -8,6 +8,7 @@ import com.abcdel.tomasulo.simulator.memory.TwoLevelCachedMemoryDecorator;
 import com.abcdel.tomasulo.ui.application.MainApplication;
 import com.abcdel.tomasulo.ui.application.handlers.ApplicationToolbarHandler;
 import com.google.common.collect.Iterables;
+import javafx.application.Platform;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,13 +18,20 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static com.abcdel.tomasulo.ui.application.MainApplication.ApplicationState;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class UiSimulator implements ApplicationToolbarHandler.ApplicationToolbarListener {
 
-    private static final boolean READ_FROM_TEXT_BINARY = false; // false reads from text string
+    private static final ExecutorService POOL = Executors.newSingleThreadExecutor();
+    private static final boolean READ_FROM_TEXT_BINARY = true; // false reads from text string
+    private static final int INTERVAL = 10;
 
     private final MainApplication mApplication;
     private Simulator mSimulator;
@@ -34,6 +42,7 @@ public class UiSimulator implements ApplicationToolbarHandler.ApplicationToolbar
     public UiSimulator(MainApplication application) {
         application.addToolbarListener(this);
         mApplication = application;
+        POOL.submit(mPlay);
     }
 
     public void setup() {
@@ -53,9 +62,8 @@ public class UiSimulator implements ApplicationToolbarHandler.ApplicationToolbar
     }
 
     @Override
-    public void onFileLoaded(File file) {
+    public synchronized void onFileLoaded(File file) {
         try {
-            System.out.println("onFileLoaded - File loaded: " + file.getPath());
             List<String> instructions = Files.readAllLines(file.toPath(), Charset.defaultCharset());
             for (int i = 0, n = instructions.size(); i < n; i++) {
                 if (instructions.get(i).trim().isEmpty()) instructions.remove(i);
@@ -71,14 +79,40 @@ public class UiSimulator implements ApplicationToolbarHandler.ApplicationToolbar
         }
     }
 
+    private AtomicBoolean mPlaying = new AtomicBoolean(false);
+    private Lock mLock = new ReentrantLock();
+
+    private final Runnable mPlay = new Runnable() {
+        @Override
+        public void run() {
+            while (true) {
+                try {
+                    Thread.sleep(INTERVAL);
+                } catch (InterruptedException e) {
+                    AssertionError error = new AssertionError();
+                    error.initCause(e);
+                    throw error;
+                }
+                if (mPlaying.get()) {
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            onStep();
+                        }
+                    });
+                }
+            }
+        }
+    };
+
     @Override
     public void onPlay() {
-        System.out.println("onPlay");
+        mPlaying.set(true);
     }
 
     @Override
     public void onStop() {
-        System.out.println("onStop");
+        mPlaying.set(false);
     }
 
     @Override
