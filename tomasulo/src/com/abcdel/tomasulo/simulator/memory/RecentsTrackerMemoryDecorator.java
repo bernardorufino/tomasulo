@@ -1,6 +1,7 @@
 package com.abcdel.tomasulo.simulator.memory;
 
 import com.google.common.base.Function;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
 import java.util.Comparator;
@@ -85,7 +86,7 @@ public class RecentsTrackerMemoryDecorator implements Memory {
     }
 
     public Map<Integer, Integer> getRecentMemory() {
-        return mTransformedMap;
+        return ImmutableMap.copyOf(mTransformedMap);
     }
 
     private class Entry implements Comparable<Entry> {

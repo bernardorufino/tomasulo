@@ -31,8 +31,15 @@ public class Simulator {
         mFlows.add(mPendingFlow);
     }
 
+    private boolean allRsDeactivated() {
+        for (ReserveStation rs : mCpu.allReserveStations()) {
+            if (rs.instruction != null) return false;
+        }
+        return true;
+    }
+
     public boolean hasFinished() {
-        return (mPendingFlow == null && mBranches.get() == 0) && mFlows.isEmpty();
+        return (mPendingFlow == null && mBranches.get() == 0) && mFlows.isEmpty() && allRsDeactivated();
     }
 
     public void clock() {

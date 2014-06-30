@@ -25,14 +25,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.abcdel.tomasulo.ui.application.MainApplication.ApplicationState;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
 public class UiSimulator implements ApplicationToolbarHandler.ApplicationToolbarListener {
 
     private static final int INTERVAL = 7;
     private static final int MEMORY_RECENTS_TO_TRACK = 10;
     private static final ExecutorService POOL = Executors.newSingleThreadExecutor();
-    private static final boolean READ_FROM_TEXT_BINARY = false; // false reads from text string
+    private static final boolean READ_FROM_TEXT_BINARY = true; // false reads from text string
     private static final boolean TWO_LEVEL_CACHED_MEMORY = false; // false for constant access time memory
+
 
     private static class TwoLevelCachedMemoryParams {
 
@@ -47,19 +49,23 @@ public class UiSimulator implements ApplicationToolbarHandler.ApplicationToolbar
     private TomasuloCpu mCpu;
     private RecentsTrackerMemoryDecorator mMemory;
     private List<Instruction> mProgram;
+    private final Thread mFxThread;
 
     public UiSimulator(MainApplication application) {
         application.addToolbarListener(this);
         mApplication = application;
+        checkState(Platform.isFxApplicationThread());
+        mFxThread = Thread.currentThread();
         POOL.submit(mPlay);
+        POOL.shutdown();
     }
 
     public void setup() {
         mCpu = new TomasuloCpu.Builder()
                 .setNumberOfRegisters(32)
-                .setFunctionalUnits(FunctionalUnit.Type.ADD, 8, 8)
-                .setFunctionalUnits(FunctionalUnit.Type.MULT, 4, 4)
-                .setFunctionalUnits(FunctionalUnit.Type.LOAD, 4, 4)
+                .setFunctionalUnits(FunctionalUnit.Type.ADD, 4, 4)
+                .setFunctionalUnits(FunctionalUnit.Type.MULT, 2, 2)
+                .setFunctionalUnits(FunctionalUnit.Type.LOAD, 2, 2)
                 .setFunctionalUnits(FunctionalUnit.Type.BRANCH, 1, 1)
                 .build();
         Memory memory;
@@ -104,7 +110,7 @@ public class UiSimulator implements ApplicationToolbarHandler.ApplicationToolbar
     private final Runnable mPlay = new Runnable() {
         @Override
         public void run() {
-            while (true) {
+            while (mFxThread.isAlive()) {
                 try {
                     Thread.sleep(INTERVAL);
                 } catch (InterruptedException e) {

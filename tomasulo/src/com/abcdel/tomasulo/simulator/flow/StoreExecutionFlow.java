@@ -34,24 +34,13 @@ public class StoreExecutionFlow extends ExecutionFlow {
 
     @Override
     protected boolean canExecute() {
-        return mReserveStation.Qj == null && mReserveStation.Qk == null && mCpu.loadStoreQueue.peek() == mRsIndex;
+        return mReserveStation.Qj == null && mCpu.loadStoreQueue.peek() == mRsIndex;
     }
 
     @Override
     protected int execute() {
         mReserveStation.A = mReserveStation.Vj + mReserveStation.A;
-        // Pop queue
-        postAtEndOfPhase(new Runnable() {
-            @Override
-            public void run() {
-                int rs = mCpu.loadStoreQueue.remove();
-                checkState(rs == mRsIndex);
-            }
-        });
-        // Writing should be done on write(), however we need the cost time here and there are no
-        // side-effects since we have a queue for accessing memory and nobody can change Vk since Qk is null
-        mMemory.write(mReserveStation.A, mReserveStation.Vk);
-        return mMemory.getLastAccessCost() - 1;
+        return 0;
     }
 
     @Override
@@ -61,7 +50,17 @@ public class StoreExecutionFlow extends ExecutionFlow {
 
     @Override
     protected int write() {
-        mReserveStation.busy = false;
-        return 0;
+        postAtEndOfPhase(new Runnable() {
+            @Override
+            public void run() {
+                mReserveStation.busy = false;
+                int rs = mCpu.loadStoreQueue.remove();
+                checkState(rs == mRsIndex);
+            }
+        });
+        // Writing should be done on write(), however we need the cost time here and there are no
+        // side-effects since we have a queue for accessing memory and nobody can change Vk since Qk is null
+        mMemory.write(mReserveStation.A, mReserveStation.Vk);
+        return mMemory.getLastAccessCost() - 1;
     }
 }

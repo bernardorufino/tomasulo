@@ -7,12 +7,14 @@ import com.abcdel.tomasulo.ui.application.handlers.ApplicationContentHandler;
 import com.abcdel.tomasulo.ui.application.handlers.ApplicationHandler;
 import com.abcdel.tomasulo.ui.application.handlers.ApplicationToolbarHandler;
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.util.Map;
 
@@ -50,9 +52,12 @@ public class MainApplication extends Application {
 
         ((Group) scene.getRoot()).getChildren().addAll(sp);
         stage.setScene(scene);
-
         stage.setTitle("Main Application");
         stage.show();
+    }
+
+    public void setOnCloseRequest(EventHandler<WindowEvent> handler) {
+        mMainStage.setOnCloseRequest(handler);
     }
 
     public ApplicationState getApplicationState() {

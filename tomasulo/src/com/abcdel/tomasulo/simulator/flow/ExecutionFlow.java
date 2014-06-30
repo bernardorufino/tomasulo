@@ -224,7 +224,7 @@ public abstract class ExecutionFlow implements Comparable<ExecutionFlow> {
     }
 
     public boolean hasFinished() {
-        return mNextPhase == null;
+        return mNextPhase == null && mCountdown == 0;
     }
 
     public Instruction getInstruction() {
@@ -251,7 +251,11 @@ public abstract class ExecutionFlow implements Comparable<ExecutionFlow> {
     }
 
     public int getExecutionTime() {
-        return (mCurrentPhase == Phase.EXECUTION) ? mCountdown : NOT_TIMED;
+        return (mCurrentPhase == Phase.EXECUTION)
+               ? mCountdown
+               : (mCurrentPhase == Phase.WRITE && this instanceof StoreExecutionFlow)
+                 ? mCountdown
+                 : NOT_TIMED;
     }
 
     public static enum Phase {
