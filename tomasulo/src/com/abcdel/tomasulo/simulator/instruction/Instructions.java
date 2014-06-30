@@ -18,6 +18,11 @@ public class Instructions {
         return data;
     }
 
+    public static String toString(Instruction instruction) {
+        /* TODO: Put attributes */
+        return (instruction == null) ? "-" : instruction.getClass().getSimpleName();
+    }
+
     // Prevents instantiation
     private Instructions() {
         throw new AssertionError("Cannot instantiate object from " + this.getClass());

@@ -120,7 +120,7 @@ public class ApplicationToolbarHandler implements ApplicationHandler {
         ImageView icon = null;
         try {
             icon = new ImageView(new Image(
-                    new FileInputStream("res/icons/" + iconName),
+                    new FileInputStream("tomasulo/res/icons/" + iconName),
                     BUTTON_IMAGE_DIMENSION,
                     BUTTON_IMAGE_DIMENSION,
                     true,

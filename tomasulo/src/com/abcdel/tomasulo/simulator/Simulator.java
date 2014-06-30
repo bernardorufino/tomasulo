@@ -21,6 +21,7 @@ public class Simulator {
     // When there is a branch, using integer in case we decide to allow more branch instructions in the pipeline
     private AtomicInteger mBranches = new AtomicInteger(0);
     private int mClock = 0;
+    private int mInstructionsFinished = 0;
 
     public Simulator(TomasuloCpu cpu, Memory memory, List<Instruction> program) {
         mCpu = cpu;
@@ -70,6 +71,7 @@ public class Simulator {
         }
         mFlows.addAll(toBeAdded);
         mFlows.removeAll(toBeRemoved);
+        mInstructionsFinished += toBeRemoved.size();
     }
 
     public int getClock() {
@@ -96,5 +98,15 @@ public class Simulator {
         Instruction instruction = mInstructions.get(pc / 4);
         mCpu.programCounter.set(pc + 4);
         return instruction;
+    }
+
+    public Instruction getCurrentInstruction() {
+        int pc = mCpu.programCounter.get();
+        if (pc / 4 >= mInstructions.size()) return null;
+        return mInstructions.get(pc / 4);
+    }
+
+    public int getInstructionsFinished() {
+        return mInstructionsFinished;
     }
 }

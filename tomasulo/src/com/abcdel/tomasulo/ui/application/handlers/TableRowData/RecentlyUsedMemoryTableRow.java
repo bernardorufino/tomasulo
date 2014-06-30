@@ -4,7 +4,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,9 +27,9 @@ public class RecentlyUsedMemoryTableRow {
 
     public static class Builder {
 
-        private HashMap<Integer, Integer> mRecentlyUsedMemory;
+        private Map<Integer, Integer> mRecentlyUsedMemory;
 
-        public Builder from(HashMap<Integer, Integer> recentlyUsedMemory) {
+        public Builder from(Map<Integer, Integer> recentlyUsedMemory) {
             mRecentlyUsedMemory = recentlyUsedMemory;
             return this;
         }

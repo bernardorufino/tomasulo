@@ -1,0 +1,6 @@
+    	ADDI R1, R0, 9
+		ADDI R2, R0, 1
+		ADDI R3, R0, 1
+LOOP:   MUL R2, R2, R3
+		ADDI R3, R3, 1
+		BLE R3, R1, LOOP

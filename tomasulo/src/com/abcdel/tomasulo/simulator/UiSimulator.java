@@ -2,12 +2,15 @@ package com.abcdel.tomasulo.simulator;
 
 import com.abcdel.tomasulo.simulator.helper.Conversion;
 import com.abcdel.tomasulo.simulator.instruction.Instruction;
+import com.abcdel.tomasulo.simulator.instruction.Instructions;
 import com.abcdel.tomasulo.simulator.memory.ConstantUniformAccessTimeMemory;
 import com.abcdel.tomasulo.simulator.memory.Memory;
-import com.abcdel.tomasulo.simulator.memory.TwoLevelCachedMemoryDecorator;
+import com.abcdel.tomasulo.simulator.memory.RecentsTrackerMemoryDecorator;
+import com.abcdel.tomasulo.simulator.memory.TwoLevelCachedMemoryAdapter;
 import com.abcdel.tomasulo.ui.application.MainApplication;
 import com.abcdel.tomasulo.ui.application.handlers.ApplicationToolbarHandler;
 import com.google.common.collect.Iterables;
+import com.marula.cache.memory.TwoLevelCachedMemory;
 import javafx.application.Platform;
 
 import java.io.File;
@@ -15,28 +18,34 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import static com.abcdel.tomasulo.ui.application.MainApplication.ApplicationState;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class UiSimulator implements ApplicationToolbarHandler.ApplicationToolbarListener {
 
+    private static final int INTERVAL = 7;
+    private static final int MEMORY_RECENTS_TO_TRACK = 10;
     private static final ExecutorService POOL = Executors.newSingleThreadExecutor();
-    private static final boolean READ_FROM_TEXT_BINARY = true; // false reads from text string
-    private static final int INTERVAL = 10;
+    private static final boolean READ_FROM_TEXT_BINARY = false; // false reads from text string
+    private static final boolean TWO_LEVEL_CACHED_MEMORY = false; // false for constant access time memory
+
+    private static class TwoLevelCachedMemoryParams {
+
+        private static final int L1_SIZE = 64 * 1024 / 4;
+        private static final int L1_BLOCKS_PER_SET = 2;
+        private static final int L2_SIZE = 1 * 1024 * 1024 / 4;
+        private static final int L2_BLOCKS_PER_SET = 16;
+    }
 
     private final MainApplication mApplication;
     private Simulator mSimulator;
     private TomasuloCpu mCpu;
-    private Memory mMemory;
+    private RecentsTrackerMemoryDecorator mMemory;
     private List<Instruction> mProgram;
 
     public UiSimulator(MainApplication application) {
@@ -48,12 +57,22 @@ public class UiSimulator implements ApplicationToolbarHandler.ApplicationToolbar
     public void setup() {
         mCpu = new TomasuloCpu.Builder()
                 .setNumberOfRegisters(32)
-                .setFunctionalUnits(FunctionalUnit.Type.ADD, 3, 3)
-                .setFunctionalUnits(FunctionalUnit.Type.MULT, 2, 2)
-                .setFunctionalUnits(FunctionalUnit.Type.LOAD, 2, 2)
+                .setFunctionalUnits(FunctionalUnit.Type.ADD, 8, 8)
+                .setFunctionalUnits(FunctionalUnit.Type.MULT, 4, 4)
+                .setFunctionalUnits(FunctionalUnit.Type.LOAD, 4, 4)
                 .setFunctionalUnits(FunctionalUnit.Type.BRANCH, 1, 1)
                 .build();
-        mMemory = new ConstantUniformAccessTimeMemory();
+        Memory memory;
+        if (TWO_LEVEL_CACHED_MEMORY) {
+            memory = new TwoLevelCachedMemoryAdapter(new TwoLevelCachedMemory(
+                    TwoLevelCachedMemoryParams.L1_SIZE,
+                    TwoLevelCachedMemoryParams.L1_BLOCKS_PER_SET,
+                    TwoLevelCachedMemoryParams.L2_SIZE,
+                    TwoLevelCachedMemoryParams.L2_BLOCKS_PER_SET));
+        } else {
+            memory = new ConstantUniformAccessTimeMemory();
+        }
+        mMemory = new RecentsTrackerMemoryDecorator(memory, MEMORY_RECENTS_TO_TRACK);
     }
 
     private Simulator newSimulator() {
@@ -62,8 +81,9 @@ public class UiSimulator implements ApplicationToolbarHandler.ApplicationToolbar
     }
 
     @Override
-    public synchronized void onFileLoaded(File file) {
+    public void onFileLoaded(File file) {
         try {
+            onStop();
             List<String> instructions = Files.readAllLines(file.toPath(), Charset.defaultCharset());
             for (int i = 0, n = instructions.size(); i < n; i++) {
                 if (instructions.get(i).trim().isEmpty()) instructions.remove(i);
@@ -80,7 +100,6 @@ public class UiSimulator implements ApplicationToolbarHandler.ApplicationToolbar
     }
 
     private AtomicBoolean mPlaying = new AtomicBoolean(false);
-    private Lock mLock = new ReentrantLock();
 
     private final Runnable mPlay = new Runnable() {
         @Override
@@ -117,6 +136,10 @@ public class UiSimulator implements ApplicationToolbarHandler.ApplicationToolbar
 
     @Override
     public void onStep() {
+        if (mSimulator.hasFinished()) {
+            onStop();
+            return;
+        }
         mApplication.setApplicationState(ApplicationState.STEPPING);
         mSimulator.clock();
         bindSimulator();
@@ -135,11 +158,11 @@ public class UiSimulator implements ApplicationToolbarHandler.ApplicationToolbar
         applicationData.reserveStations = rsArray;
         applicationData.registerStats = mCpu.registerStatus;
         applicationData.clock = mSimulator.getClock();
-        applicationData.CPI = 1.03; // TODO: insert actual value
-        applicationData.concludedInstructionCount = 5; // TODO: insert actual value
-        applicationData.PC = String.valueOf(10000); // TODO: insert actual PC
-        applicationData.recentlyUsedMemory = new HashMap<>(); // TODO: Take this from the actual memory
-        applicationData.recentlyUsedMemory.put(10, 20);
+        int count = mSimulator.getInstructionsFinished();
+        applicationData.concludedInstructionCount = count;
+        applicationData.CPI = (count == 0) ? 0 : (double) applicationData.clock / count;
+        applicationData.PC = mCpu.programCounter.get() + ": " + Instructions.toString(mSimulator.getCurrentInstruction());
+        applicationData.recentlyUsedMemory = mMemory.getRecentMemory();
         mApplication.bind(applicationData);
     }
 
