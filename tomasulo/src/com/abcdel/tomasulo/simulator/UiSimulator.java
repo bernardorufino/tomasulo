@@ -107,6 +107,7 @@ public class UiSimulator implements ApplicationToolbarHandler.ApplicationToolbar
     }
 
     private boolean isBinary(String s) {
+        s = s.replaceFirst(";(.*)$", "");
         return s.replaceAll("[^10]", "").length() >= INSTRUCTION_SIZE;
     }
 
