@@ -5,15 +5,13 @@ import com.abcdel.tomasulo.simulator.TomasuloCpu;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Jmp implements Instruction, Branch {
+public class Jmp extends IInstruction implements Instruction, Branch {
 
-    public int imm;
+    public Jmp(int imm) {
+        super(TomasuloCpu.NO_REGISTER, TomasuloCpu.NO_REGISTER, imm);
+    }
 
-  public Jmp(int imm) {
-    this.imm = imm;
-  }
-
-  @Override
+    @Override
     public int[] dependencies() {
         return new int[0];
     }

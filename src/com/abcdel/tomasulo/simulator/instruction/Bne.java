@@ -23,7 +23,8 @@ public class Bne extends IInstruction implements Branch {
     @Override
     public void branch(int r1, int r2, AtomicInteger pc) {
         if (r1 != r2) {
-            pc.set(pc.get() + 4 + imm);
+            // pc.set(pc.get() + 4 + imm);
+            pc.set(imm);
         }
     }
 }

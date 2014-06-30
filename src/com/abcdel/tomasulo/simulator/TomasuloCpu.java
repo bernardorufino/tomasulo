@@ -64,7 +64,7 @@ public class TomasuloCpu {
     public static class Builder {
 
         private int mNumberOfRegisters = 0;
-        private Map<FunctionalUnit.Type, int[]> mFunctionalUnits = new HashMap<>();
+        private Map<FunctionalUnit.Type, int[]> mFunctionalUnits = new LinkedHashMap<>();
 
         public Builder setNumberOfRegisters(int numberOfRegisters) {
             mNumberOfRegisters = numberOfRegisters;

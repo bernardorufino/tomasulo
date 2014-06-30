@@ -21,11 +21,11 @@ public class StoreExecutionFlow extends ExecutionFlow {
             mReserveStation.Qj = null;
         }
         if (mCpu.registerStatus[i.rt].Qi != null) {
-            mReserveStation.Vj = 0;
-            mReserveStation.Qj = mCpu.registerStatus[i.rt].Qi;
+            mReserveStation.Vk = 0;
+            mReserveStation.Qk = mCpu.registerStatus[i.rt].Qi;
         } else {
-            mReserveStation.Vj = mCpu.registers[i.rt];
-            mReserveStation.Qj = null;
+            mReserveStation.Vk = mCpu.registers[i.rt];
+            mReserveStation.Qk = null;
         }
         mReserveStation.A = i.imm;
         mReserveStation.busy = true;
@@ -34,7 +34,7 @@ public class StoreExecutionFlow extends ExecutionFlow {
 
     @Override
     protected boolean canExecute() {
-        return mReserveStation.Qj == null && mCpu.loadStoreQueue.peek() == mRsIndex;
+        return mReserveStation.Qj == null && mReserveStation.Qk == null && mCpu.loadStoreQueue.peek() == mRsIndex;
     }
 
     @Override

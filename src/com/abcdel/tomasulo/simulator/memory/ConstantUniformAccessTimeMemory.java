@@ -12,17 +12,19 @@ public class ConstantUniformAccessTimeMemory implements Memory {
 
     @Override
     public int read(int address) {
-        Integer content = mMemory.get(address);
-        if (content == null) {
-            content = address; /* TODO: Change address for GARBAGE  */
-            mMemory.put(address, content);
+        Integer value = mMemory.get(address);
+        if (value == null) {
+            value = address; /* TODO: Change address for GARBAGE  */
+            mMemory.put(address, value);
         }
-        return content;
+        System.out.println("R: Mem["+address+"] = " + value);
+        return value;
     }
 
     @Override
     public void write(int address, int value) {
         mMemory.put(address, value);
+        System.out.println("W: Mem["+address+"] = " + value);
     }
 
     @Override

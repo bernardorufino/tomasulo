@@ -30,11 +30,11 @@ public class FpExecutionFlow extends ExecutionFlow {
             mReserveStation.Qk = null;
         } else {
             if (mCpu.registerStatus[i.rt].Qi != null) {
-                mReserveStation.Vj = 0;
-                mReserveStation.Qj = mCpu.registerStatus[i.rt].Qi;
+                mReserveStation.Vk = 0;
+                mReserveStation.Qk = mCpu.registerStatus[i.rt].Qi;
             } else {
-                mReserveStation.Vj = mCpu.registers[i.rt];
-                mReserveStation.Qj = null;
+                mReserveStation.Vk = mCpu.registers[i.rt];
+                mReserveStation.Qk = null;
             }
         }
         mReserveStation.busy = true;

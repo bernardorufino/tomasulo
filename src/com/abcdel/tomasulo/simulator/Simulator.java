@@ -36,16 +36,19 @@ public class Simulator {
 
     public void clock() {
         mClock++;
-        if (mBranches.get() == 0 && mPendingFlow != null && mPendingFlow.hasBeenAllocated()) {
+        if (mBranches.get() == 0
+                && (mPendingFlow == ExecutionFlow.NOP_FLOW
+                || (mPendingFlow != null && mPendingFlow.hasBeenAllocated()))) {
             if (mPendingFlow.getFuType() == FunctionalUnit.Type.BRANCH) {
                 mBranches.getAndIncrement();
             } else {
-                mPendingFlow = getNextFlowAndFeedQueue();
+                mPendingFlow = getNextFlowAndAddTo(mFlows);
             }
         }
         // Emulates Common Data Bus
         AtomicBoolean canWriteLock = new AtomicBoolean(true);
         Collection<ExecutionFlow> toBeRemoved = new LinkedList<>();
+        Collection<ExecutionFlow> toBeAdded = new LinkedList<>();
         Collection<Runnable> listeners = new LinkedList<>();
         for (ReserveStation rs : mCpu.allReserveStations()) {
             if (rs.busy) continue;
@@ -58,25 +61,26 @@ public class Simulator {
                 toBeRemoved.add(flow);
                 if (flow.getFuType() == FunctionalUnit.Type.BRANCH) {
                     mBranches.getAndDecrement();
-                    mPendingFlow = getNextFlowAndFeedQueue();
+                    mPendingFlow = getNextFlowAndAddTo(toBeAdded);
                 }
             }
         }
         for (Runnable listener : listeners) {
             listener.run();
         }
-        for (ExecutionFlow flow : toBeRemoved) {
-            mFlows.remove(flow);
-        }
+        mFlows.addAll(toBeAdded);
+        mFlows.removeAll(toBeRemoved);
     }
 
     public int getClock() {
         return mClock;
     }
 
-    private ExecutionFlow getNextFlowAndFeedQueue() {
+    private ExecutionFlow getNextFlowAndAddTo(Collection<? super ExecutionFlow> collection) {
         ExecutionFlow flow = nextFlow();
-        if (flow != null) mFlows.add(flow);
+        if (flow != null && flow != ExecutionFlow.NOP_FLOW) {
+            collection.add(flow);
+        }
         return flow;
     }
 
@@ -87,7 +91,6 @@ public class Simulator {
     }
 
     private Instruction nextInstruction() {
-        /* TODO: Die when instruction list is done */
         int pc = mCpu.programCounter.get();
         if (pc / 4 >= mInstructions.size()) return null;
         Instruction instruction = mInstructions.get(pc / 4);

@@ -21,6 +21,8 @@ import static com.google.common.base.Preconditions.checkState;
 
 public abstract class ExecutionFlow implements Comparable<ExecutionFlow> {
 
+    public static final ExecutionFlow NOP_FLOW = new NopFlow();
+
     public static final int NOT_TIMED = -1;
 
     private static final List<Phase> PHASES_ORDER =
@@ -34,6 +36,12 @@ public abstract class ExecutionFlow implements Comparable<ExecutionFlow> {
         FunctionalUnit.Type type = FunctionalUnit.Type.of(instruction);
         ExecutionFlow flow = null;
         switch (type) {
+            case UNDEFINED:
+                return NOP_FLOW;
+                // NOP_FLOW shouldn't be initialized
+            case BRANCH:
+                flow = new BranchExecutionFlow();
+                break;
             case ADD:
             case MULT:
                 flow = new FpExecutionFlow();
@@ -251,5 +259,30 @@ public abstract class ExecutionFlow implements Comparable<ExecutionFlow> {
 
     public static enum Phase {
         ISSUE, EXECUTION, WRITE
+    }
+
+    private static class NopFlow extends ExecutionFlow {
+
+        private static final String ERROR_MESSAGE = "NOP_FLOW shouldn't receive method calls";
+
+        @Override
+        protected void onCreate() {
+            /* No-op */
+        }
+
+        @Override
+        protected int issue(Instruction.Data data) {
+            throw new IllegalStateException(ERROR_MESSAGE);
+        }
+
+        @Override
+        protected int execute() {
+            throw new IllegalStateException(ERROR_MESSAGE);
+        }
+
+        @Override
+        protected int write() {
+            throw new IllegalStateException(ERROR_MESSAGE);
+        }
     }
 }

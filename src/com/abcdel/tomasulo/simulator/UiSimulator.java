@@ -34,7 +34,6 @@ public class UiSimulator implements ApplicationToolbarHandler.ApplicationToolbar
     public UiSimulator(MainApplication application) {
         application.addToolbarListener(this);
         mApplication = application;
-        setup();
     }
 
     public void setup() {
@@ -43,20 +42,13 @@ public class UiSimulator implements ApplicationToolbarHandler.ApplicationToolbar
                 .setFunctionalUnits(FunctionalUnit.Type.ADD, 3, 3)
                 .setFunctionalUnits(FunctionalUnit.Type.MULT, 2, 2)
                 .setFunctionalUnits(FunctionalUnit.Type.LOAD, 2, 2)
+                .setFunctionalUnits(FunctionalUnit.Type.BRANCH, 1, 1)
                 .build();
         mMemory = new ConstantUniformAccessTimeMemory();
-//        List<Instruction> instructions = ImmutableList.of(
-//                new Lw(6, 2, 34),
-//                new Lw(2, 3, 45),
-//                new Mul(0, 2, 4),
-//                new Sub(8, 6, 2),
-//                new Mul(10, 0, 6),
-//                new Add(6, 8, 2)
-//        );
-//        return new Simulator(mCpu, mMemory, instructions);
     }
 
     private Simulator newSimulator() {
+        setup();
         return new Simulator(checkNotNull(mCpu), checkNotNull(mMemory), checkNotNull(mProgram));
     }
 
@@ -68,7 +60,6 @@ public class UiSimulator implements ApplicationToolbarHandler.ApplicationToolbar
             for (int i = 0, n = instructions.size(); i < n; i++) {
                 if (instructions.get(i).trim().isEmpty()) instructions.remove(i);
             }
-
             mProgram = (READ_FROM_TEXT_BINARY)
                     ? Conversion.toReadableInstruction(instructions)
                     : Conversion.fromLiteralToReadableInstruction(instructions);
@@ -94,13 +85,11 @@ public class UiSimulator implements ApplicationToolbarHandler.ApplicationToolbar
     public void onStep() {
         mApplication.setApplicationState(ApplicationState.STEPPING);
         mSimulator.clock();
-        System.out.println(mSimulator.getClock());
         bindSimulator();
         mApplication.setApplicationState(ApplicationState.PAUSED);
     }
 
     private void bindSimulator() {
-        /* TODO: Change register status */
         List<ReserveStation> reserveStations = new ArrayList<>();
         Iterables.addAll(reserveStations, mCpu.allReserveStations());
         ReserveStation[] rsArray = reserveStations.toArray(new ReserveStation[reserveStations.size()]);
