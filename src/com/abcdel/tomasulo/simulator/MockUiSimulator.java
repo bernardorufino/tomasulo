@@ -104,7 +104,8 @@ public class MockUiSimulator implements ApplicationToolbarHandler.ApplicationToo
 
                         mApplication.bind(
                                 mReserveStations.toArray(new ReserveStation[mReserveStations.size()]),
-                                mRegisterStats.toArray(new RegisterStat[mRegisterStats.size()]));
+                                mRegisterStats.toArray(new RegisterStat[mRegisterStats.size()]),
+                                10);
                     } while (!mBreakSimulation);
                     Platform.runLater(new Runnable() {
                         @Override

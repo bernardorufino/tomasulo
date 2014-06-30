@@ -10,5 +10,5 @@ public interface ApplicationHandler {
     public void updateApplicationState(MainApplication.ApplicationState applicationState);
     public Node createPane();
     public void addListener(MainApplication.ApplicationListener listener);
-    public void bind(ReserveStation[] reserveStations, RegisterStat[] registerStats);
+    public void bind(ReserveStation[] reserveStations, RegisterStat[] registerStats, int clock);
 }

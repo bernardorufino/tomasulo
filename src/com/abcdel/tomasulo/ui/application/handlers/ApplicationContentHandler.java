@@ -52,7 +52,7 @@ public class ApplicationContentHandler implements ApplicationHandler {
     }
 
     @Override
-    public void bind(ReserveStation[] reserveStations, RegisterStat[] registerStats) {
+    public void bind(ReserveStation[] reserveStations, RegisterStat[] registerStats, int clock) {
         List<ReserveStationTableRow> reserveStationTableRows = new ArrayList<ReserveStationTableRow>();
         for (ReserveStation rs : reserveStations) {
             reserveStationTableRows.add((new ReserveStationTableRow.Builder()).from(rs).build());

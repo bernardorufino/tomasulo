@@ -16,8 +16,9 @@ public class ReserveStationTableRow {
     private StringProperty mQj;
     private StringProperty mQk;
     private StringProperty mA;
+    private StringProperty mExecTime;
 
-    private ReserveStationTableRow(String id, String type, String busy, String instruction, String state, String vj, String vk, String qj, String qk, String a) {
+    private ReserveStationTableRow(String id, String type, String busy, String instruction, String state, String vj, String vk, String qj, String qk, String a, String executionTime) {
         mID = new SimpleStringProperty(id);
         mType = new SimpleStringProperty(type);
         mBusy = new SimpleStringProperty(busy);
@@ -28,9 +29,8 @@ public class ReserveStationTableRow {
         mQj = new SimpleStringProperty(qj);
         mQk = new SimpleStringProperty(qk);
         mA = new SimpleStringProperty(a);
+        mExecTime = new SimpleStringProperty(executionTime);
     }
-
-
 
     public StringProperty mIDProperty(){
         return mID;
@@ -72,6 +72,11 @@ public class ReserveStationTableRow {
         return mInstruction;
     }
 
+    public StringProperty mExecTimeProperty() {
+        return mExecTime;
+    }
+
+
     public static class Builder {
         private String mId;
         private String mType;
@@ -83,6 +88,7 @@ public class ReserveStationTableRow {
         private String mQj;
         private String mQk;
         private String mA;
+        private String mExecutionTime;
 
         public Builder from(ReserveStation rs) {
             mId = rs.getId();
@@ -95,11 +101,12 @@ public class ReserveStationTableRow {
             mQj = (rs.Qj != null) ? rs.Qj.getId() : "-";
             mQk = (rs.Qk != null) ? rs.Qk.getId() : "-";
             mA = String.valueOf(rs.A);
+            mExecutionTime = (rs.executionTime != null) ? rs.executionTime : "-";
             return this;
         }
 
         public ReserveStationTableRow build() {
-            return new ReserveStationTableRow(mId, mType, mBusy, mInstruction, mState, mVj, mVk, mQj, mQk, mA);
+            return new ReserveStationTableRow(mId, mType, mBusy, mInstruction, mState, mVj, mVk, mQj, mQk, mA, mExecutionTime);
         }
     }
 }

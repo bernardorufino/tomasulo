@@ -12,6 +12,7 @@ public class ReserveStation {
     public ReserveStation Qj;
     public ReserveStation Qk;
     public int A;
+    public String executionTime;
 
     private int mIndex;
     private ExecutionFlow mExecutionFlow;
@@ -31,6 +32,7 @@ public class ReserveStation {
         Qj = null;
         Qk = null;
         A = 0;
+        executionTime = null;
     }
 
     /* TODO: Needed by the UI, refactor to extract this info from here */

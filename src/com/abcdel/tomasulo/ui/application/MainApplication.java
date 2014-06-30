@@ -71,8 +71,9 @@ public class MainApplication extends Application {
         mApplicationToolbarHandler.updateApplicationState(mApplicationState);
     }
 
-    public void bind(ReserveStation[] reserveStations, RegisterStat[] registerStats) {
-        mApplicationContentHandler.bind(reserveStations, registerStats);
+    public void bind(ReserveStation[] reserveStations, RegisterStat[] registerStats, int clock) {
+        mApplicationContentHandler.bind(reserveStations, registerStats, clock);
+        mApplicationToolbarHandler.bind(reserveStations, registerStats, clock);
     }
 
     private Node createContentPane() {

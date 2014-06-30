@@ -16,7 +16,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -34,6 +33,7 @@ public class ApplicationToolbarHandler implements ApplicationHandler {
     private ImageView mPlayIcon;
     private ImageView mPauseIcon;
     private Label mLoadedFileLabel;
+    private Label mClockLabel;
 
     private final List<ApplicationToolbarListener> mListeners = new ArrayList<ApplicationToolbarListener>();
     private MainApplication mApplication;
@@ -50,16 +50,21 @@ public class ApplicationToolbarHandler implements ApplicationHandler {
         spacerLeft.getStyleClass().setAll("spacer");
         Region spacerCenter = new Region();
         spacerCenter.getStyleClass().setAll("spacer");
+        Region spacerRight = new Region();
+        spacerRight.getStyleClass().setAll("spacer");
 
         HBox buttonBar = new HBox();
         buttonBar.getStyleClass().setAll("segmented-button-bar");
         createButtons();
         buttonBar.getChildren().addAll(mPlayButton, mStopButton, mStepButton, mFileButton);
+        setButtonListeners();
 
         mLoadedFileLabel = new Label("No File was loaded");
         mLoadedFileLabel.setTextFill(Color.BLACK);
-        setButtonListeners();
-        toolBar.getItems().addAll(spacerLeft, buttonBar, spacerCenter, mLoadedFileLabel);
+        mClockLabel = new Label(String.format("Current Clock: %15d", 0));
+        mClockLabel.setTextFill(Color.BLACK);
+
+        toolBar.getItems().addAll(spacerLeft, buttonBar, spacerCenter, mClockLabel ,spacerRight, mLoadedFileLabel);
         return toolBar;
     }
 
@@ -73,8 +78,8 @@ public class ApplicationToolbarHandler implements ApplicationHandler {
     }
 
     @Override
-    public void bind(ReserveStation[] reserveStations, RegisterStat[] registerStats) {
-        // No data to be updated
+    public void bind(ReserveStation[] reserveStations, RegisterStat[] registerStats, int clock) {
+        mClockLabel.setText(String.format("Current Clock: %15d", clock));
     }
 
     @Override

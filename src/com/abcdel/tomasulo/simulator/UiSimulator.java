@@ -78,7 +78,8 @@ public class UiSimulator implements ApplicationToolbarHandler.ApplicationToolbar
             Collections.addAll(reserveStations, rs);
         }
         ReserveStation[] rsArray = reserveStations.toArray(new ReserveStation[reserveStations.size()]);
-        mApplication.bind(rsArray, mCpu.registerStatus);
+        mApplication.bind(rsArray, mCpu.registerStatus, 10000);
+        // TODO: insert correct clock value
     }
 
     @Override
