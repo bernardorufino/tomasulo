@@ -41,8 +41,7 @@ public class Simulator {
             if (mPendingFlow.getFuType() == FunctionalUnit.Type.BRANCH) {
                 mBranches.getAndIncrement();
             } else {
-                mPendingFlow = nextFlow();
-                mFlows.add(mPendingFlow);
+                mPendingFlow = getNextFlowAndFeedQueue();
             }
         }
         // Emulates Common Data Bus
@@ -56,8 +55,7 @@ public class Simulator {
                 toBeRemoved.add(flow);
                 if (flow.getFuType() == FunctionalUnit.Type.BRANCH) {
                     mBranches.getAndDecrement();
-                    mPendingFlow = nextFlow();
-                    mFlows.add(mPendingFlow);
+                    mPendingFlow = getNextFlowAndFeedQueue();
                 }
             }
         }
@@ -73,14 +71,22 @@ public class Simulator {
         return mClock;
     }
 
+    private ExecutionFlow getNextFlowAndFeedQueue() {
+        ExecutionFlow flow = nextFlow();
+        if (flow != null) mFlows.add(flow);
+        return flow;
+    }
+
     private ExecutionFlow nextFlow() {
         Instruction instruction = nextInstruction();
+        if (instruction == null) return null;
         return ExecutionFlow.create(instruction, mCpu, mMemory, mBranches);
     }
 
     private Instruction nextInstruction() {
         /* TODO: Die when instruction list is done */
         int pc = mCpu.programCounter.get();
+        if (pc / 4 >= mInstructions.size()) return null;
         Instruction instruction = mInstructions.get(pc / 4);
         mCpu.programCounter.set(pc + 4);
         return instruction;

@@ -1,6 +1,7 @@
 package com.abcdel.tomasulo.ui.application.handlers.TableRowData;
 
 import com.abcdel.tomasulo.simulator.ReserveStation;
+import com.abcdel.tomasulo.simulator.flow.ExecutionFlow;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -101,7 +102,7 @@ public class ReserveStationTableRow {
             mQj = (rs.Qj != null) ? rs.Qj.getId() : "-";
             mQk = (rs.Qk != null) ? rs.Qk.getId() : "-";
             mA = String.valueOf(rs.A);
-            mExecutionTime = (rs.executionTime != null) ? rs.executionTime : "-";
+            mExecutionTime = (rs.getExecutionTime() != ExecutionFlow.NOT_TIMED) ? Integer.toString(rs.getExecutionTime()) : "-";
             return this;
         }
 

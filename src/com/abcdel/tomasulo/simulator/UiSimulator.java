@@ -83,7 +83,7 @@ public class UiSimulator implements ApplicationToolbarHandler.ApplicationToolbar
         for (int i = 0; i < mCpu.registerStatus.length; i++) {
             mCpu.registerStatus[i].Vi = mCpu.registers[i];
         }
-        mApplication.bind(rsArray, mCpu.registerStatus, 10000);
+        mApplication.bind(rsArray, mCpu.registerStatus, mSimulator.getClock());
     }
 
     @Override

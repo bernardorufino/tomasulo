@@ -26,7 +26,7 @@ public class ConstantUniformAccessTimeMemory implements Memory {
     }
 
     @Override
-    public int cost(int address) {
+    public int getLastAccessCost() {
         return CYCLE_COST;
     }
 }

@@ -8,6 +8,8 @@ import static com.google.common.base.Preconditions.checkState;
 
 public class StoreExecutionFlow extends ExecutionFlow {
 
+    private int mResult;
+
     @Override
     protected int issue(Instruction.Data i) {
         mCpu.loadStoreQueue.add(mRsIndex);
@@ -46,7 +48,10 @@ public class StoreExecutionFlow extends ExecutionFlow {
                 checkState(rs == mRsIndex);
             }
         });
-        return mMemory.cost(mReserveStation.A) - 1;
+        // Writing should be done on write(), however we need the cost time here and there are no
+        // side-effects since we have a queue for accessing memory and nobody can change Vk since Qk is null
+        mMemory.write(mReserveStation.A, mReserveStation.Vk);
+        return mMemory.getLastAccessCost() - 1;
     }
 
     @Override
@@ -56,7 +61,7 @@ public class StoreExecutionFlow extends ExecutionFlow {
 
     @Override
     protected int write() {
-        mMemory.write(mReserveStation.A, mReserveStation.Vk);
+        // mMemory.write(mReserveStation.A, mReserveStation.Vk);
         mReserveStation.busy = false;
         return 0;
     }

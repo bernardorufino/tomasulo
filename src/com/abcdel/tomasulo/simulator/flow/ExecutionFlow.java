@@ -21,6 +21,8 @@ import static com.google.common.base.Preconditions.checkState;
 
 public abstract class ExecutionFlow implements Comparable<ExecutionFlow> {
 
+    public static final int NOT_TIMED = -1;
+
     private static final List<Phase> PHASES_ORDER =
             ImmutableList.of(Phase.ISSUE, Phase.EXECUTION, Phase.WRITE);
 
@@ -223,6 +225,10 @@ public abstract class ExecutionFlow implements Comparable<ExecutionFlow> {
     @Override
     public String toString() {
         return getClass().getSimpleName() +  " for " + mInstruction.getClass().getSimpleName() + " at " + mNextPhase;
+    }
+
+    public int getExecutionTime() {
+        return (mCurrentPhase == Phase.EXECUTION) ? mCountdown : NOT_TIMED;
     }
 
     public static enum Phase {

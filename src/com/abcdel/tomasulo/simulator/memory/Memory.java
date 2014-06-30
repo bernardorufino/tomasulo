@@ -7,5 +7,5 @@ public interface Memory {
     public void write(int address, int value);
 
     // return how many cycles it will cost to access this memory address
-    public int cost(int address);
+    public int getLastAccessCost();
 }
