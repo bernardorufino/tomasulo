@@ -1,6 +1,6 @@
 package com.abcdel.tomasulo.ui.application;
 
-import com.abcdel.tomasulo.simulator.RegisterStat;
+import com.abcdel.tomasulo.simulator.RegisterStatus;
 import com.abcdel.tomasulo.simulator.ReserveStation;
 import com.abcdel.tomasulo.simulator.UiSimulator;
 import com.abcdel.tomasulo.ui.application.handlers.ApplicationContentHandler;
@@ -71,7 +71,7 @@ public class MainApplication extends Application {
         mApplicationToolbarHandler.updateApplicationState(mApplicationState);
     }
 
-    public void bind(ReserveStation[] reserveStations, RegisterStat[] registerStats, int clock) {
+    public void bind(ReserveStation[] reserveStations, RegisterStatus[] registerStats, int clock) {
         mApplicationContentHandler.bind(reserveStations, registerStats, clock);
         mApplicationToolbarHandler.bind(reserveStations, registerStats, clock);
     }

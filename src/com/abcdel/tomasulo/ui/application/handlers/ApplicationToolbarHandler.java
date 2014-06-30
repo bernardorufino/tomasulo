@@ -1,6 +1,6 @@
 package com.abcdel.tomasulo.ui.application.handlers;
 
-import com.abcdel.tomasulo.simulator.RegisterStat;
+import com.abcdel.tomasulo.simulator.RegisterStatus;
 import com.abcdel.tomasulo.simulator.ReserveStation;
 import com.abcdel.tomasulo.ui.application.MainApplication;
 import javafx.event.ActionEvent;
@@ -78,7 +78,7 @@ public class ApplicationToolbarHandler implements ApplicationHandler {
     }
 
     @Override
-    public void bind(ReserveStation[] reserveStations, RegisterStat[] registerStats, int clock) {
+    public void bind(ReserveStation[] reserveStations, RegisterStatus[] registerStats, int clock) {
         mClockLabel.setText(String.format("Current Clock: %15d", clock));
     }
 

@@ -20,6 +20,7 @@ public class Simulator {
     private PriorityQueue<ExecutionFlow> mFlows = new PriorityQueue<>();
     // When there is a branch, using integer in case we decide to allow more branch instructions in the pipeline
     private AtomicInteger mBranches = new AtomicInteger(0);
+    private int mClock = 0;
 
     /* TODO: Receive bits instead of instructions */
     public Simulator(TomasuloCpu cpu, Memory memory, List<Instruction> instructions) {
@@ -35,6 +36,7 @@ public class Simulator {
     }
 
     public void clock() {
+        mClock++;
         if (mBranches.get() == 0 && mPendingFlow != null && mPendingFlow.hasBeenAllocated()) {
             if (mPendingFlow.getFuType() == FunctionalUnit.Type.BRANCH) {
                 mBranches.getAndIncrement();
@@ -67,12 +69,17 @@ public class Simulator {
         }
     }
 
+    public int getClock() {
+        return mClock;
+    }
+
     private ExecutionFlow nextFlow() {
         Instruction instruction = nextInstruction();
         return ExecutionFlow.create(instruction, mCpu, mMemory, mBranches);
     }
 
     private Instruction nextInstruction() {
+        /* TODO: Die when instruction list is done */
         int pc = mCpu.programCounter.get();
         Instruction instruction = mInstructions.get(pc / 4);
         mCpu.programCounter.set(pc + 4);

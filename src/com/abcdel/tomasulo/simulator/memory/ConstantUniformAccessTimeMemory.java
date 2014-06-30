@@ -14,7 +14,7 @@ public class ConstantUniformAccessTimeMemory implements Memory {
     public int read(int address) {
         Integer content = mMemory.get(address);
         if (content == null) {
-            content = GARBAGE;
+            content = address; /* TODO: Change address for GARBAGE  */
             mMemory.put(address, content);
         }
         return content;

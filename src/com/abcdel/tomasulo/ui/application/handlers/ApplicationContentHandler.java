@@ -1,6 +1,6 @@
 package com.abcdel.tomasulo.ui.application.handlers;
 
-import com.abcdel.tomasulo.simulator.RegisterStat;
+import com.abcdel.tomasulo.simulator.RegisterStatus;
 import com.abcdel.tomasulo.simulator.ReserveStation;
 import com.abcdel.tomasulo.ui.application.MainApplication;
 import com.abcdel.tomasulo.ui.application.handlers.TableRowData.GeneralInformationTableRow;
@@ -52,7 +52,7 @@ public class ApplicationContentHandler implements ApplicationHandler {
     }
 
     @Override
-    public void bind(ReserveStation[] reserveStations, RegisterStat[] registerStats, int clock) {
+    public void bind(ReserveStation[] reserveStations, RegisterStatus[] registerStats, int clock) {
         List<ReserveStationTableRow> reserveStationTableRows = new ArrayList<ReserveStationTableRow>();
         for (ReserveStation rs : reserveStations) {
             reserveStationTableRows.add((new ReserveStationTableRow.Builder()).from(rs).build());
@@ -61,7 +61,7 @@ public class ApplicationContentHandler implements ApplicationHandler {
 
         List<RegisterTableRow> registerStatTableRows = new ArrayList<RegisterTableRow>();
         int i = 0;
-        for (RegisterStat regStat : registerStats) {
+        for (RegisterStatus regStat : registerStats) {
             registerStatTableRows.add((new RegisterTableRow.Builder()).from(regStat).setReg(i).build());
             i++;
         }

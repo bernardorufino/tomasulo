@@ -11,9 +11,9 @@ public class TomasuloCpu {
     public static final int NO_RESERVE_STATION = -1;
 
     public int[] registers;
-    public RegisterStat[] registerStatus;
-    public Map<FunctionalUnit.Type, FunctionalUnit[]> functionalUnits = new HashMap<>();
-    public Map<FunctionalUnit.Type, ReserveStation[]> reserveStations = new HashMap<>();
+    public RegisterStatus[] registerStatus;
+    public Map<FunctionalUnit.Type, FunctionalUnit[]> functionalUnits = new LinkedHashMap<>();
+    public Map<FunctionalUnit.Type, ReserveStation[]> reserveStations = new LinkedHashMap<>();
     public AtomicInteger programCounter = new AtomicInteger(0);
     public Queue<Integer> loadStoreQueue = new LinkedList<>();
 
@@ -21,12 +21,12 @@ public class TomasuloCpu {
     public TomasuloCpu(int numberOfRegisters, Map<FunctionalUnit.Type, int[]> functionalUnitsCount) {
         registers = new int[numberOfRegisters];
         // Uncomment for debugging initial state
-        //for (int i = 0; i < registers.length; i++) {
-        //    registers[i] = i; /* TODO: Remove */
-        //}
-        registerStatus = new RegisterStat[numberOfRegisters];
+        for (int i = 0; i < registers.length; i++) {
+            registers[i] = i; /* TODO: Remove */
+        }
+        registerStatus = new RegisterStatus[numberOfRegisters];
         for (int i = 0; i < registerStatus.length; i++) {
-            registerStatus[i] = new RegisterStat();
+            registerStatus[i] = new RegisterStatus();
         }
         for (Map.Entry<FunctionalUnit.Type, int[]> entry : functionalUnitsCount.entrySet()) {
             FunctionalUnit.Type type = entry.getKey();

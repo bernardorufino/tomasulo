@@ -1,6 +1,6 @@
 package com.abcdel.tomasulo.simulator;
 
-public class RegisterStat {
+public class RegisterStatus {
 
     public ReserveStation Qi;
     public int Vi;

@@ -65,21 +65,25 @@ public class UiSimulator implements ApplicationToolbarHandler.ApplicationToolbar
 
     @Override
     public void onStep() {
-        System.out.println("onStep");
         mApplication.setApplicationState(ApplicationState.STEPPING);
         mSimulator.clock();
+        System.out.println(mSimulator.getClock());
         bindSimulator();
         mApplication.setApplicationState(ApplicationState.PAUSED);
     }
 
     private void bindSimulator() {
+        /* TODO: Change register status */
         List<ReserveStation> reserveStations = new ArrayList<>();
         for (ReserveStation[] rs : mCpu.reserveStations.values()) {
             Collections.addAll(reserveStations, rs);
         }
         ReserveStation[] rsArray = reserveStations.toArray(new ReserveStation[reserveStations.size()]);
-        mApplication.bind(rsArray, mCpu.registerStatus, 10000);
         // TODO: insert correct clock value
+        for (int i = 0; i < mCpu.registerStatus.length; i++) {
+            mCpu.registerStatus[i].Vi = mCpu.registers[i];
+        }
+        mApplication.bind(rsArray, mCpu.registerStatus, 10000);
     }
 
     @Override

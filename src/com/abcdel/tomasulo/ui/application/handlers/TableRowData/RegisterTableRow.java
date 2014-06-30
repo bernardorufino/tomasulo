@@ -1,6 +1,6 @@
 package com.abcdel.tomasulo.ui.application.handlers.TableRowData;
 
-import com.abcdel.tomasulo.simulator.RegisterStat;
+import com.abcdel.tomasulo.simulator.RegisterStatus;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -39,7 +39,7 @@ public class RegisterTableRow {
             return this;
         }
 
-        public Builder from(RegisterStat registerStat) {
+        public Builder from(RegisterStatus registerStat) {
             mQ = (registerStat.Qi != null) ? registerStat.Qi.getId() : "-";
             mV = String.valueOf(registerStat.Vi);
             return this;

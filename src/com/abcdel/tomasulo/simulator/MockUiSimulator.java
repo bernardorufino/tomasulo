@@ -13,7 +13,7 @@ public class MockUiSimulator implements ApplicationToolbarHandler.ApplicationToo
 
     private MainApplication mApplication;
     private List<ReserveStation> mReserveStations;
-    private List<RegisterStat> mRegisterStats;
+    private List<RegisterStatus> mRegisterStats;
 
     private boolean mBreakSimulation;
     private ApplicationState mNextState;
@@ -25,12 +25,12 @@ public class MockUiSimulator implements ApplicationToolbarHandler.ApplicationToo
         mApplication = application;
 
         mReserveStations = new ArrayList<ReserveStation>();
-        mRegisterStats = new ArrayList<RegisterStat>();
+        mRegisterStats = new ArrayList<RegisterStatus>();
         for (int i = 0; i < 1; i++) {
             mReserveStations.add(new ReserveStation(i, null));
         }
         for (int i = 0; i < 1; i++) {
-            mRegisterStats.add(new RegisterStat());
+            mRegisterStats.add(new RegisterStatus());
         }
     }
 
@@ -95,7 +95,7 @@ public class MockUiSimulator implements ApplicationToolbarHandler.ApplicationToo
 //                        reserveStation.Vj = (new Random()).nextInt(256);
 //                        reserveStation.Vk = 2;
 
-                        RegisterStat registerStat = new RegisterStat();
+                        RegisterStatus registerStat = new RegisterStatus();
                         registerStat.Qi = reserveStation;
                         registerStat.Vi = reserveStation.Vj;
 
@@ -104,7 +104,7 @@ public class MockUiSimulator implements ApplicationToolbarHandler.ApplicationToo
 
                         mApplication.bind(
                                 mReserveStations.toArray(new ReserveStation[mReserveStations.size()]),
-                                mRegisterStats.toArray(new RegisterStat[mRegisterStats.size()]),
+                                mRegisterStats.toArray(new RegisterStatus[mRegisterStats.size()]),
                                 10);
                     } while (!mBreakSimulation);
                     Platform.runLater(new Runnable() {
