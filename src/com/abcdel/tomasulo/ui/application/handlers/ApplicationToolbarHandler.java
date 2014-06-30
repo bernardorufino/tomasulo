@@ -1,7 +1,5 @@
 package com.abcdel.tomasulo.ui.application.handlers;
 
-import com.abcdel.tomasulo.simulator.RegisterStatus;
-import com.abcdel.tomasulo.simulator.ReserveStation;
 import com.abcdel.tomasulo.ui.application.MainApplication;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -33,7 +31,7 @@ public class ApplicationToolbarHandler implements ApplicationHandler {
     private ImageView mPlayIcon;
     private ImageView mPauseIcon;
     private Label mLoadedFileLabel;
-    private Label mClockLabel;
+    private Label mStateLabel;
 
     private final List<ApplicationToolbarListener> mListeners = new ArrayList<ApplicationToolbarListener>();
     private MainApplication mApplication;
@@ -50,6 +48,8 @@ public class ApplicationToolbarHandler implements ApplicationHandler {
         spacerLeft.getStyleClass().setAll("spacer");
         Region spacerCenter = new Region();
         spacerCenter.getStyleClass().setAll("spacer");
+        Region spacerRight = new Region();
+        spacerRight.getStyleClass().setAll("spacer");
 
         HBox buttonBar = new HBox();
         buttonBar.getStyleClass().setAll("segmented-button-bar");
@@ -59,8 +59,10 @@ public class ApplicationToolbarHandler implements ApplicationHandler {
 
         mLoadedFileLabel = new Label("No File was loaded");
         mLoadedFileLabel.setTextFill(Color.BLACK);
+        mStateLabel = new Label();
+        mStateLabel.setTextFill(Color.BLACK);
 
-        toolBar.getItems().addAll(spacerLeft, buttonBar, spacerCenter, mLoadedFileLabel);
+        toolBar.getItems().addAll(spacerLeft, buttonBar, spacerCenter, mStateLabel, spacerRight, mLoadedFileLabel);
         return toolBar;
     }
 
@@ -82,6 +84,11 @@ public class ApplicationToolbarHandler implements ApplicationHandler {
     public void updateApplicationState(MainApplication.ApplicationState applicationState){
         updateEnabledButtons(applicationState);
         updatePlayIcon(applicationState);
+        updateStateLabel(applicationState);
+    }
+
+    private void updateStateLabel(MainApplication.ApplicationState applicationState) {
+        mStateLabel.setText(String.format("%10s", applicationState.toString()));
     }
 
     private void createButtons() {
@@ -178,7 +185,7 @@ public class ApplicationToolbarHandler implements ApplicationHandler {
 
     private void updateEnabledButtons(MainApplication.ApplicationState applicationState) {
         switch (applicationState) {
-            case STAND_BY:
+            case IDLE:
                 mPlayButton.setDisable(true);
                 mStepButton.setDisable(true);
                 mStopButton.setDisable(true);
@@ -200,13 +207,19 @@ public class ApplicationToolbarHandler implements ApplicationHandler {
                 mPlayButton.setDisable(false);
                 mStepButton.setDisable(false);
                 mStopButton.setDisable(false);
-                mFileButton.setDisable(true);
+                mFileButton.setDisable(false);
                 break;
             case STEPPING:
                 mPlayButton.setDisable(true);
                 mStepButton.setDisable(true);
                 mStopButton.setDisable(false);
                 mFileButton.setDisable(true);
+                break;
+            case FINISHED:
+                mPlayButton.setDisable(false);
+                mStepButton.setDisable(false);
+                mStopButton.setDisable(true);
+                mFileButton.setDisable(false);
                 break;
             default:
                 break;

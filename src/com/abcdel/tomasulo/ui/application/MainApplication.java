@@ -15,7 +15,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 import java.util.HashMap;
-import java.util.List;
 
 public class MainApplication extends Application {
 
@@ -85,13 +84,24 @@ public class MainApplication extends Application {
 
         borderPane.setCenter(mApplicationContentHandler.createPane());
 
-        setApplicationState(ApplicationState.STAND_BY);
+        setApplicationState(ApplicationState.IDLE);
 
         return borderPane;
     }
 
     public enum ApplicationState {
-        STAND_BY, LOADED, RUNNING, PAUSED, STEPPING
+        IDLE("IDLE"), LOADED("LOADED"), RUNNING("RUNNING"), PAUSED("PAUSED"), STEPPING("RUNNING"), FINISHED("FINISHED");
+
+        private String mName;
+
+        private ApplicationState(String name) {
+            mName = name;
+        }
+
+        @Override
+        public String toString() {
+            return mName;
+        }
     }
 
     public static interface ApplicationListener {
