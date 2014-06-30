@@ -56,7 +56,7 @@ public abstract class ExecutionFlow implements Comparable<ExecutionFlow> {
                 break;
         }
         checkState(flow != null, "Instruction does not yield valid flow"); assert flow != null;
-        flow.onCreate(instruction, cpu, memory, branches);
+        flow.onCreate(instruction, cpu, memory);
         return flow;
     }
 
@@ -68,7 +68,6 @@ public abstract class ExecutionFlow implements Comparable<ExecutionFlow> {
     protected int mRsIndex = TomasuloCpu.NO_RESERVE_STATION;
     protected ReserveStation mReserveStation = null;
     protected FunctionalUnit mFunctionalUnit = null;
-    private AtomicInteger mBranches; /* TODO  */
     private Phase mNextPhase = Phase.ISSUE;
     private Phase mCurrentPhase = Phase.ISSUE;
     private FunctionalUnit.Type mType;
@@ -84,8 +83,7 @@ public abstract class ExecutionFlow implements Comparable<ExecutionFlow> {
     private ExecutionFlow onCreate(
             Instruction instruction,
             TomasuloCpu cpu,
-            Memory memory,
-            AtomicInteger branches) {
+            Memory memory) {
         mInstruction = instruction;
         mType = FunctionalUnit.Type.of(mInstruction);
         mCpu = cpu;
@@ -94,7 +92,6 @@ public abstract class ExecutionFlow implements Comparable<ExecutionFlow> {
         mFunctionalUnits = mCpu.functionalUnits.get(mType);
         checkNotNull(mReserveStations, "Functional units for type " + mType + " not present");
         mMemory = memory;
-        mBranches = branches;
         onCreate();
         return this;
     }

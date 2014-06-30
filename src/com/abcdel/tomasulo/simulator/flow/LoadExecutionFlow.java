@@ -63,16 +63,14 @@ public class LoadExecutionFlow extends ExecutionFlow {
                 mCpu.registerStatus[x].Qi = null;
             }
         }
-        for (ReserveStation[] reserveStations : mCpu.reserveStations.values()) { /* TODO: allReserveStations */
-            for (ReserveStation rs : reserveStations) {
-                if (rs.Qj == mReserveStation) {
-                    rs.Vj = mResult;
-                    rs.Qj = null;
-                }
-                if (rs.Qk == mReserveStation) {
-                    rs.Vk = mResult;
-                    rs.Qk = null;
-                }
+        for (ReserveStation rs : mCpu.allReserveStations()) {
+            if (rs.Qj == mReserveStation) {
+                rs.Vj = mResult;
+                rs.Qj = null;
+            }
+            if (rs.Qk == mReserveStation) {
+                rs.Vk = mResult;
+                rs.Qk = null;
             }
         }
         mReserveStation.busy = false;

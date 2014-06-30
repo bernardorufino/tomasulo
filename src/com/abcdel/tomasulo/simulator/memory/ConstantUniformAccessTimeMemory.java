@@ -17,14 +17,12 @@ public class ConstantUniformAccessTimeMemory implements Memory {
             value = address; /* TODO: Change address for GARBAGE  */
             mMemory.put(address, value);
         }
-        System.out.println("R: Mem["+address+"] = " + value);
         return value;
     }
 
     @Override
     public void write(int address, int value) {
         mMemory.put(address, value);
-        System.out.println("W: Mem["+address+"] = " + value);
     }
 
     @Override
