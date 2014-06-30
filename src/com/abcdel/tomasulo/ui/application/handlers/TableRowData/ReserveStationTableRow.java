@@ -30,6 +30,8 @@ public class ReserveStationTableRow {
         mA = new SimpleStringProperty(a);
     }
 
+
+
     public StringProperty mIDProperty(){
         return mID;
     }
@@ -66,6 +68,10 @@ public class ReserveStationTableRow {
         return mA;
     }
 
+    public StringProperty mInstructionProperty() {
+        return mInstruction;
+    }
+
     public static class Builder {
         private String mId;
         private String mType;
@@ -79,15 +85,15 @@ public class ReserveStationTableRow {
         private String mA;
 
         public Builder from(ReserveStation rs) {
-            mId = rs.id;
-            mType = rs.type;
+            mId = rs.getId();
+            mType = (rs.getType() != null) ? rs.getType().toString() : "-";
             mBusy = String.valueOf(rs.busy);
-            mInstruction = rs.instruction.getClass().getName();
-            mState = rs.state.toString();
+            mInstruction = (rs.instruction != null) ? rs.instruction.getClass().getSimpleName() : "-";
+            mState = (rs.getPhase() != null) ? rs.getPhase().toString() : "-";
             mVj = String.valueOf(rs.Vj);
             mVk = String.valueOf(rs.Vk);
-            mQj = rs.Qj.id;
-            mQk = rs.Qk.id;
+            mQj = (rs.Qj != null) ? rs.Qj.getId() : "-";
+            mQk = (rs.Qk != null) ? rs.Qk.getId() : "-";
             mA = String.valueOf(rs.A);
             return this;
         }

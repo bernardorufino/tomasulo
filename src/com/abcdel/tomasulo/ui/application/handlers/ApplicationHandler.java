@@ -6,6 +6,7 @@ import com.abcdel.tomasulo.ui.application.MainApplication;
 import javafx.scene.Node;
 
 public interface ApplicationHandler {
+
     public void updateApplicationState(MainApplication.ApplicationState applicationState);
     public Node createPane();
     public void addListener(MainApplication.ApplicationListener listener);

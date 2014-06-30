@@ -1,6 +1,6 @@
 package com.abcdel.tomasulo.simulator.instruction;
 
-import com.abcdel.tomasulo.simulator.Cpu;
+import com.abcdel.tomasulo.simulator.TomasuloCpu;
 
 public class Sw extends IInstruction {
 
@@ -15,6 +15,6 @@ public class Sw extends IInstruction {
 
     @Override
     public int assignee() {
-        return Cpu.NO_REGISTER;
+        return TomasuloCpu.NO_REGISTER;
     }
 }

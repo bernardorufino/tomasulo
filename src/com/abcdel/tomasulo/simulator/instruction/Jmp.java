@@ -1,6 +1,7 @@
 package com.abcdel.tomasulo.simulator.instruction;
 
-import com.abcdel.tomasulo.simulator.Cpu;
+
+import com.abcdel.tomasulo.simulator.TomasuloCpu;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -15,7 +16,7 @@ public class Jmp implements Instruction, Branch {
 
     @Override
     public int assignee() {
-        return Cpu.NO_REGISTER;
+        return TomasuloCpu.NO_REGISTER;
     }
 
     @Override

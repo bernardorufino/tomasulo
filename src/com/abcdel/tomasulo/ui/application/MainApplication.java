@@ -2,12 +2,11 @@ package com.abcdel.tomasulo.ui.application;
 
 import com.abcdel.tomasulo.simulator.RegisterStat;
 import com.abcdel.tomasulo.simulator.ReserveStation;
+import com.abcdel.tomasulo.simulator.UiSimulator;
 import com.abcdel.tomasulo.ui.application.handlers.ApplicationContentHandler;
 import com.abcdel.tomasulo.ui.application.handlers.ApplicationHandler;
 import com.abcdel.tomasulo.ui.application.handlers.ApplicationToolbarHandler;
 import javafx.application.Application;
-import com.abcdel.tomasulo.simulator.MockSimulator;
-import com.abcdel.tomasulo.simulator.Simulator;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -22,7 +21,7 @@ public class MainApplication extends Application {
     private ApplicationHandler mApplicationContentHandler;
 
     private ApplicationState mApplicationState;
-    private Simulator mSimulator;
+    private UiSimulator mUiSimulator;
 
     public static void main(String[] args) {
         launch(args);
@@ -35,7 +34,7 @@ public class MainApplication extends Application {
         mApplicationToolbarHandler = new ApplicationToolbarHandler(this);
         mApplicationContentHandler = new ApplicationContentHandler();
 
-        mSimulator = new MockSimulator(this);
+        mUiSimulator = new UiSimulator(this);
 
         Scene scene = new Scene(new Group(), 900, 600);
 

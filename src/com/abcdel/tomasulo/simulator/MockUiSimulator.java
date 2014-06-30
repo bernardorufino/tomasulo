@@ -1,17 +1,15 @@
 package com.abcdel.tomasulo.simulator;
 
-import com.abcdel.tomasulo.simulator.instruction.Add;
 import com.abcdel.tomasulo.ui.application.MainApplication;
-import com.abcdel.tomasulo.ui.application.MainApplication.*;
+import com.abcdel.tomasulo.ui.application.MainApplication.ApplicationState;
 import com.abcdel.tomasulo.ui.application.handlers.ApplicationToolbarHandler;
 import javafx.application.Platform;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
-public class MockSimulator implements ApplicationToolbarHandler.ApplicationToolbarListener, Simulator {
+public class MockUiSimulator implements ApplicationToolbarHandler.ApplicationToolbarListener {
 
     private MainApplication mApplication;
     private List<ReserveStation> mReserveStations;
@@ -21,7 +19,7 @@ public class MockSimulator implements ApplicationToolbarHandler.ApplicationToolb
     private ApplicationState mNextState;
     private Thread mExecutionThread;
 
-    public MockSimulator(MainApplication application) {
+    public MockUiSimulator(MainApplication application) {
         application.addToolbarListener(this);
 
         mApplication = application;
@@ -29,7 +27,7 @@ public class MockSimulator implements ApplicationToolbarHandler.ApplicationToolb
         mReserveStations = new ArrayList<ReserveStation>();
         mRegisterStats = new ArrayList<RegisterStat>();
         for (int i = 0; i < 1; i++) {
-            mReserveStations.add(new ReserveStation());
+            mReserveStations.add(new ReserveStation(i, null));
         }
         for (int i = 0; i < 1; i++) {
             mRegisterStats.add(new RegisterStat());
@@ -84,17 +82,18 @@ public class MockSimulator implements ApplicationToolbarHandler.ApplicationToolb
                     do {
                         Thread.sleep(500);
 
-                        ReserveStation reserveStation = new ReserveStation();
-                        reserveStation.id = "Add1";
-                        reserveStation.type = "Add";
-                        reserveStation.busy = true;
-                        reserveStation.A = 0;
-                        reserveStation.instruction = new Add(0, 0, 0);
-                        reserveStation.Qj = new ReserveStation();
-                        reserveStation.Qk = new ReserveStation();
-                        reserveStation.state = ReserveStation.State.EXECUTE;
-                        reserveStation.Vj = (new Random()).nextInt(256);
-                        reserveStation.Vk = 2;
+                        ReserveStation reserveStation = new ReserveStation(0, null);
+//                        ReserveStation reserveStation = new ReserveStation();
+//                        reserveStation.id = "Add1";
+//                        reserveStation.type = "Add";
+//                        reserveStation.busy = true;
+//                        reserveStation.A = 0;
+//                        reserveStation.instruction = new Add(0, 0, 0);
+//                        reserveStation.Qj = new ReserveStation();
+//                        reserveStation.Qk = new ReserveStation();
+//                        reserveStation.state = ReserveStation.State.EXECUTE;
+//                        reserveStation.Vj = (new Random()).nextInt(256);
+//                        reserveStation.Vk = 2;
 
                         RegisterStat registerStat = new RegisterStat();
                         registerStat.Qi = reserveStation;

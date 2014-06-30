@@ -1,11 +1,11 @@
 package com.abcdel.tomasulo.simulator.instruction;
 
-import com.abcdel.tomasulo.simulator.Cpu;
+import com.abcdel.tomasulo.simulator.TomasuloCpu;
 
 public class Nop extends RInstruction {
 
     public Nop() {
-        super(Cpu.NO_REGISTER, Cpu.NO_REGISTER, Cpu.NO_REGISTER);
+        super(TomasuloCpu.NO_REGISTER, TomasuloCpu.NO_REGISTER, TomasuloCpu.NO_REGISTER);
     }
 
     @Override
@@ -15,6 +15,6 @@ public class Nop extends RInstruction {
 
     @Override
     public int assignee() {
-        return Cpu.NO_REGISTER;
+        return TomasuloCpu.NO_REGISTER;
     }
 }
