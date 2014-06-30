@@ -1,36 +1,43 @@
 package com.abcdel.tomasulo.simulator;
 
-import com.abcdel.tomasulo.simulator.instruction.*;
+import com.abcdel.tomasulo.simulator.helper.Conversion;
+import com.abcdel.tomasulo.simulator.instruction.Instruction;
 import com.abcdel.tomasulo.simulator.memory.ConstantUniformAccessTimeMemory;
 import com.abcdel.tomasulo.simulator.memory.Memory;
 import com.abcdel.tomasulo.simulator.memory.TwoLevelCachedMemoryDecorator;
 import com.abcdel.tomasulo.ui.application.MainApplication;
 import com.abcdel.tomasulo.ui.application.handlers.ApplicationToolbarHandler;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
 import static com.abcdel.tomasulo.ui.application.MainApplication.ApplicationState;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class UiSimulator implements ApplicationToolbarHandler.ApplicationToolbarListener {
 
+    private static final boolean READ_FROM_TEXT_BINARY = false; // false reads from text string
+
     private final MainApplication mApplication;
-    private final Simulator mSimulator;
+    private Simulator mSimulator;
     private TomasuloCpu mCpu;
     private Memory mMemory;
+    private List<Instruction> mProgram;
 
     public UiSimulator(MainApplication application) {
         application.addToolbarListener(this);
         mApplication = application;
-        mSimulator = newSimulator();
+        setup();
     }
 
-    public Simulator newSimulator() {
+    public void setup() {
         mCpu = new TomasuloCpu.Builder()
                 .setNumberOfRegisters(32)
                 .setFunctionalUnits(FunctionalUnit.Type.ADD, 3, 3)
@@ -38,26 +45,43 @@ public class UiSimulator implements ApplicationToolbarHandler.ApplicationToolbar
                 .setFunctionalUnits(FunctionalUnit.Type.LOAD, 2, 2)
                 .build();
         mMemory = new ConstantUniformAccessTimeMemory();
-        List<Instruction> instructions = ImmutableList.of(
-                new Lw(6, 2, 34),
-                new Lw(2, 3, 45),
-                new Mul(0, 2, 4),
-                new Sub(8, 6, 2),
-                new Mul(10, 0, 6),
-                new Add(6, 8, 2)
-        );
-        return new Simulator(mCpu, mMemory, instructions);
+//        List<Instruction> instructions = ImmutableList.of(
+//                new Lw(6, 2, 34),
+//                new Lw(2, 3, 45),
+//                new Mul(0, 2, 4),
+//                new Sub(8, 6, 2),
+//                new Mul(10, 0, 6),
+//                new Add(6, 8, 2)
+//        );
+//        return new Simulator(mCpu, mMemory, instructions);
+    }
+
+    private Simulator newSimulator() {
+        return new Simulator(checkNotNull(mCpu), checkNotNull(mMemory), checkNotNull(mProgram));
     }
 
     @Override
     public void onFileLoaded(File file) {
-        System.out.println("onFileLoaded - File loaded: " + file.getPath());
-        mApplication.setApplicationState(ApplicationState.LOADED);
+        try {
+            System.out.println("onFileLoaded - File loaded: " + file.getPath());
+            List<String> instructions = Files.readAllLines(file.toPath(), Charset.defaultCharset());
+            for (int i = 0, n = instructions.size(); i < n; i++) {
+                if (instructions.get(i).trim().isEmpty()) instructions.remove(i);
+            }
+
+            mProgram = (READ_FROM_TEXT_BINARY)
+                    ? Conversion.toReadableInstruction(instructions)
+                    : Conversion.fromLiteralToReadableInstruction(instructions);
+            mSimulator = newSimulator();
+            mApplication.setApplicationState(ApplicationState.LOADED);
+        } catch (IOException e) {
+            e.printStackTrace();
+            /* TODO: Print pretty message */
+        }
     }
 
     @Override
     public void onPlay() {
-        mApplication.setApplicationState(ApplicationState.LOADED);
         System.out.println("onPlay");
     }
 

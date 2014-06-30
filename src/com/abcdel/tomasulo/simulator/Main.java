@@ -4,16 +4,16 @@ import com.abcdel.tomasulo.simulator.instruction.*;
 import com.abcdel.tomasulo.simulator.memory.ConstantUniformAccessTimeMemory;
 import com.abcdel.tomasulo.simulator.memory.Memory;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
 public class Main {
 
     public static void main(String[] args) {
-        TomasuloCpu cpu = new TomasuloCpu(32, ImmutableMap.<FunctionalUnit.Type, int[]>builder()
-                .put(FunctionalUnit.Type.ADD, new int[] {2, 2})
-                .put(FunctionalUnit.Type.MULT, new int[] {1, 1})
-                .put(FunctionalUnit.Type.LOAD, new int[] {2, 2})
-                .build());
+        TomasuloCpu cpu = new TomasuloCpu.Builder()
+                .setNumberOfRegisters(32)
+                .setFunctionalUnits(FunctionalUnit.Type.ADD, 3, 3)
+                .setFunctionalUnits(FunctionalUnit.Type.MULT, 2, 2)
+                .setFunctionalUnits(FunctionalUnit.Type.LOAD, 2, 2)
+                .build();
         Memory memory = new ConstantUniformAccessTimeMemory();
         Simulator simulator = new Simulator(cpu, memory, ImmutableList.<Instruction>of(
                 new Lw(6, 2, 34),

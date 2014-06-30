@@ -22,11 +22,10 @@ public class Simulator {
     private AtomicInteger mBranches = new AtomicInteger(0);
     private int mClock = 0;
 
-    /* TODO: Receive bits instead of instructions */
-    public Simulator(TomasuloCpu cpu, Memory memory, List<Instruction> instructions) {
+    public Simulator(TomasuloCpu cpu, Memory memory, List<Instruction> program) {
         mCpu = cpu;
         mMemory = memory;
-        mInstructions = instructions;
+        mInstructions = program;
         mPendingFlow = ExecutionFlow.create(nextInstruction(), mCpu, mMemory, mBranches);
         mFlows.add(mPendingFlow);
     }

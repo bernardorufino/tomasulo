@@ -26,9 +26,9 @@ public class TomasuloCpu {
 
         registers = new int[numberOfRegisters];
         // Uncomment for debugging initial state
-        for (int i = 0; i < registers.length; i++) {
-            registers[i] = i; /* TODO: Remove */
-        }
+        // for (int i = 0; i < registers.length; i++) {
+        //     registers[i] = i; /* TODO: Remove */
+        // }
         registerStatus = new RegisterStatus[numberOfRegisters];
         for (int i = 0; i < registerStatus.length; i++) {
             registerStatus[i] = new RegisterStatus();

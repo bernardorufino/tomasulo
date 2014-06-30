@@ -43,6 +43,10 @@ public class Conversion {
     return instructionsBinary;
   }
 
+  public static List<Instruction> fromLiteralToReadableInstruction(List<String> literalInstructions) {
+      return toReadableInstruction(toBinary(literalInstructions));
+  }
+
   public static List<Instruction> toReadableInstruction(String filename){
     return toReadableInstruction(readFromFile(filename));
   }
