@@ -32,8 +32,8 @@ public class UiSimulator implements ApplicationToolbarHandler.ApplicationToolbar
     private static final int INTERVAL = 7;
     private static final int MEMORY_RECENTS_TO_TRACK = 10;
     private static final ExecutorService POOL = Executors.newSingleThreadExecutor();
-    private static final boolean READ_FROM_TEXT_BINARY = true; // false reads from text string
     private static final boolean TWO_LEVEL_CACHED_MEMORY = false; // false for constant access time memory
+    private static final int INSTRUCTION_SIZE = 32; // In bits
 
 
     private static class TwoLevelCachedMemoryParams {
@@ -94,15 +94,20 @@ public class UiSimulator implements ApplicationToolbarHandler.ApplicationToolbar
             for (int i = 0, n = instructions.size(); i < n; i++) {
                 if (instructions.get(i).trim().isEmpty()) instructions.remove(i);
             }
-            mProgram = (READ_FROM_TEXT_BINARY)
-                    ? Conversion.toReadableInstruction(instructions)
-                    : Conversion.fromLiteralToReadableInstruction(instructions);
+            boolean textBinary = isBinary(instructions.get(0));
+            mProgram = (textBinary)
+                       ? Conversion.toReadableInstruction(instructions)
+                       : Conversion.fromLiteralToReadableInstruction(instructions);
             mSimulator = newSimulator();
             mApplication.setApplicationState(ApplicationState.LOADED);
         } catch (IOException e) {
             e.printStackTrace();
             /* TODO: Print pretty message */
         }
+    }
+
+    private boolean isBinary(String s) {
+        return s.replaceAll("[^10]", "").length() >= INSTRUCTION_SIZE;
     }
 
     private AtomicBoolean mPlaying = new AtomicBoolean(false);

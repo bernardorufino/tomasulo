@@ -8,8 +8,6 @@ import static com.google.common.base.Preconditions.checkState;
 
 public class StoreExecutionFlow extends ExecutionFlow {
 
-    private int mResult;
-
     @Override
     protected int issue(Instruction.Data i) {
         mCpu.loadStoreQueue.add(mRsIndex);
