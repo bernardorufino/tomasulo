@@ -67,6 +67,7 @@ public abstract class ExecutionFlow implements Comparable<ExecutionFlow> {
     private int mCountdown = 0;
     private Collection<Runnable> mEndOfCycleListeners = new HashSet<>();
     private Collection<Runnable> mEndOfPhaseListeners = new HashSet<>();
+    private boolean mWaiting = false;
 
     protected ExecutionFlow() {
         /* Prevents outside instantiation, should use ExecutionFlow.create() instead */
@@ -118,7 +119,11 @@ public abstract class ExecutionFlow implements Comparable<ExecutionFlow> {
                         break;
                     }
                 }
-                if (!rsAllocated) return;
+                if (!rsAllocated) {
+                    mWaiting = true;
+                    return;
+                }
+                mWaiting = false;
                 Instruction.Data data = Instructions.getAssociatedData(mInstruction);
                 delay = issue(data);
                 nextPhase(delay, Phase.EXECUTION);
@@ -134,16 +139,25 @@ public abstract class ExecutionFlow implements Comparable<ExecutionFlow> {
                             break;
                         }
                     }
-                    if (!fuAllocated) return;
+                    if (!fuAllocated) {
+                        mWaiting = true;
+                        return;
+                    }
+                    mWaiting = false;
                     delay = execute();
                     nextPhase(delay, Phase.WRITE);
+                } else {
+                    mWaiting = true;
                 }
                 break;
             case WRITE:
                 mFunctionalUnit.busy = false;
                 if (canWrite(canWriteLock)) {
+                    mWaiting = false;
                     delay = write();
                     nextPhase(delay, null);
+                } else {
+                    mWaiting = true;
                 }
                 break;
         }
@@ -214,6 +228,10 @@ public abstract class ExecutionFlow implements Comparable<ExecutionFlow> {
 
     public Phase getPhase() {
         return mCurrentPhase;
+    }
+
+    public boolean isWaiting() {
+        return mWaiting;
     }
 
     public int compareTo(ExecutionFlow other) {

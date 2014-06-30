@@ -1,8 +1,8 @@
 package com.abcdel.tomasulo.simulator;
 
+import com.abcdel.tomasulo.simulator.flow.ExecutionFlow;
 import com.abcdel.tomasulo.simulator.instruction.Instruction;
 import com.abcdel.tomasulo.simulator.memory.Memory;
-import com.abcdel.tomasulo.simulator.flow.ExecutionFlow;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -48,6 +48,10 @@ public class Simulator {
         AtomicBoolean canWriteLock = new AtomicBoolean(true);
         Collection<ExecutionFlow> toBeRemoved = new LinkedList<>();
         Collection<Runnable> listeners = new LinkedList<>();
+        for (ReserveStation rs : mCpu.allReserveStations()) {
+            if (rs.busy) continue;
+            rs.deallocate();
+        }
         for (ExecutionFlow flow : mFlows) {
             flow.clock(canWriteLock);
             listeners.addAll(flow.getEndOfCycleListeners());

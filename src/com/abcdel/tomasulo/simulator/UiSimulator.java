@@ -7,7 +7,7 @@ import com.abcdel.tomasulo.simulator.memory.TwoLevelCachedMemoryDecorator;
 import com.abcdel.tomasulo.ui.application.MainApplication;
 import com.abcdel.tomasulo.ui.application.handlers.ApplicationToolbarHandler;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -31,12 +31,13 @@ public class UiSimulator implements ApplicationToolbarHandler.ApplicationToolbar
     }
 
     public Simulator newSimulator() {
-        mCpu = new TomasuloCpu(32, ImmutableMap.<FunctionalUnit.Type, int[]>builder()
-                .put(FunctionalUnit.Type.ADD, new int[] {2, 2})
-                .put(FunctionalUnit.Type.MULT, new int[] {1, 1})
-                .put(FunctionalUnit.Type.LOAD, new int[] {2, 2})
-                .build());
-        mMemory = new TwoLevelCachedMemoryDecorator();
+        mCpu = new TomasuloCpu.Builder()
+                .setNumberOfRegisters(32)
+                .setFunctionalUnits(FunctionalUnit.Type.ADD, 3, 3)
+                .setFunctionalUnits(FunctionalUnit.Type.MULT, 2, 2)
+                .setFunctionalUnits(FunctionalUnit.Type.LOAD, 2, 2)
+                .build();
+        mMemory = new ConstantUniformAccessTimeMemory();
         List<Instruction> instructions = ImmutableList.of(
                 new Lw(6, 2, 34),
                 new Lw(2, 3, 45),
@@ -77,9 +78,7 @@ public class UiSimulator implements ApplicationToolbarHandler.ApplicationToolbar
     private void bindSimulator() {
         /* TODO: Change register status */
         List<ReserveStation> reserveStations = new ArrayList<>();
-        for (ReserveStation[] rs : mCpu.reserveStations.values()) {
-            Collections.addAll(reserveStations, rs);
-        }
+        Iterables.addAll(reserveStations, mCpu.allReserveStations());
         ReserveStation[] rsArray = reserveStations.toArray(new ReserveStation[reserveStations.size()]);
         for (int i = 0; i < mCpu.registerStatus.length; i++) {
             mCpu.registerStatus[i].Vi = mCpu.registers[i];

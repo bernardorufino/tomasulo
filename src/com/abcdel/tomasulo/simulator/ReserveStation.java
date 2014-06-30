@@ -23,9 +23,16 @@ public class ReserveStation {
     }
 
     public void allocate(ExecutionFlow executionFlow) {
+        deallocate();
         mExecutionFlow = executionFlow;
         busy = true;
         instruction = mExecutionFlow.getInstruction();
+    }
+
+    public void deallocate() {
+        mExecutionFlow = null;
+        busy = false;
+        instruction = null;
         Vj = 0;
         Vk = 0;
         Qj = null;
@@ -43,11 +50,7 @@ public class ReserveStation {
         return mType;
     }
 
-    public ExecutionFlow.Phase getPhase() {
-        return (mExecutionFlow != null) ? mExecutionFlow.getPhase() : null;
-    }
-
-    public int getExecutionTime() {
-        return (mExecutionFlow != null) ? mExecutionFlow.getExecutionTime() : ExecutionFlow.NOT_TIMED;
+    public ExecutionFlow getExecutionFlow() {
+        return mExecutionFlow;
     }
 }

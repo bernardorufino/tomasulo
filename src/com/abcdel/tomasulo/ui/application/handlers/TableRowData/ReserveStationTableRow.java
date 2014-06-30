@@ -92,17 +92,28 @@ public class ReserveStationTableRow {
         private String mExecutionTime;
 
         public Builder from(ReserveStation rs) {
+            ExecutionFlow flow = rs.getExecutionFlow();
             mId = rs.getId();
             mType = (rs.getType() != null) ? rs.getType().toString() : "-";
             mBusy = String.valueOf(rs.busy);
             mInstruction = (rs.instruction != null) ? rs.instruction.getClass().getSimpleName() : "-";
-            mState = (rs.getPhase() != null) ? rs.getPhase().toString() : "-";
+            mState = "-";
+            if (flow != null) {
+                if (flow.isWaiting()) {
+                    mState = "WAITING";
+                } else if (flow.getPhase() != null) {
+                    mState = flow.getPhase().toString();
+                }
+            }
             mVj = String.valueOf(rs.Vj);
             mVk = String.valueOf(rs.Vk);
             mQj = (rs.Qj != null) ? rs.Qj.getId() : "-";
             mQk = (rs.Qk != null) ? rs.Qk.getId() : "-";
             mA = String.valueOf(rs.A);
-            mExecutionTime = (rs.getExecutionTime() != ExecutionFlow.NOT_TIMED) ? Integer.toString(rs.getExecutionTime()) : "-";
+            mExecutionTime = "-";
+            if (flow != null && !flow.isWaiting() && flow.getExecutionTime() != ExecutionFlow.NOT_TIMED) {
+                mExecutionTime = Integer.toString(flow.getExecutionTime());
+            }
             return this;
         }
 

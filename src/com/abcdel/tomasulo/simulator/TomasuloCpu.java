@@ -1,8 +1,12 @@
 package com.abcdel.tomasulo.simulator;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
+
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 
 public class TomasuloCpu {
@@ -17,8 +21,9 @@ public class TomasuloCpu {
     public AtomicInteger programCounter = new AtomicInteger(0);
     public Queue<Integer> loadStoreQueue = new LinkedList<>();
 
-    /* TODO: Privatize */
-    public TomasuloCpu(int numberOfRegisters, Map<FunctionalUnit.Type, int[]> functionalUnitsCount) {
+    private TomasuloCpu(int numberOfRegisters, Map<FunctionalUnit.Type, int[]> functionalUnitsCount) {
+        checkArgument(numberOfRegisters > 0, "Number of register must be greater than zero");
+
         registers = new int[numberOfRegisters];
         // Uncomment for debugging initial state
         for (int i = 0; i < registers.length; i++) {
@@ -47,5 +52,35 @@ public class TomasuloCpu {
         }
     }
 
-    /* TODO: Make builder */
+    public Iterable<ReserveStation> allReserveStations() {
+        Iterable<ReserveStation> ans = ImmutableList.of();
+        for (ReserveStation[] rs : reserveStations.values()) {
+            Iterable<ReserveStation> i = Arrays.asList(rs);
+            ans = (ans == null) ? i : Iterables.concat(ans, i);
+        }
+        return ans;
+    }
+
+    public static class Builder {
+
+        private int mNumberOfRegisters = 0;
+        private Map<FunctionalUnit.Type, int[]> mFunctionalUnits = new HashMap<>();
+
+        public Builder setNumberOfRegisters(int numberOfRegisters) {
+            mNumberOfRegisters = numberOfRegisters;
+            return this;
+        }
+
+        public Builder setFunctionalUnits(
+                FunctionalUnit.Type type,
+                int numberOfFunctionalUnits,
+                int numberOfReserveStations) {
+            mFunctionalUnits.put(type, new int[] {numberOfFunctionalUnits, numberOfReserveStations});
+            return this;
+        }
+
+        public TomasuloCpu build() {
+            return new TomasuloCpu(mNumberOfRegisters, mFunctionalUnits);
+        }
+    }
 }
