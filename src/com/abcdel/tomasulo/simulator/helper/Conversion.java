@@ -23,6 +23,7 @@ public class Conversion {
   }
 
   public static List<String> toBinary(List<String> readableInstructions){
+    readableInstructions = new ArrayList<>(readableInstructions); /* TODO: Please check other methods */
     List<String> instructionsBinary = new ArrayList<>();
     HashMap<String, Integer> labels = new HashMap<>();
 
