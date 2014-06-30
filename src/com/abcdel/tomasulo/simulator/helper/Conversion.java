@@ -1,5 +1,7 @@
 package com.abcdel.tomasulo.simulator.helper;
 
+import com.abcdel.tomasulo.simulator.instruction.*;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,24 +43,37 @@ public class Conversion {
     return instructionsBinary;
   }
 
-
-  public static List<String> toReadableInstruction(String filename) {
+  public static List<Instruction> toReadableInstruction(String filename){
     return toReadableInstruction(readFromFile(filename));
   }
 
-  public static void toReadableInstruction(String filenameRead, String filenameWrite) {
-    writeToFile(filenameWrite, toReadableInstruction(readFromFile(filenameRead)));
+  public static List<Instruction> toReadableInstruction(List<String> binaryInstructions) {
+    List<Instruction> instructions = new ArrayList<>();
+
+    for(String line : binaryInstructions){
+      instructions.add(toReadableInstructionLine(line));
+    }
+
+    return instructions;
   }
 
-  public static void toReadableInstruction( String filenameWrite, List<String> lines) {
-    writeToFile(filenameWrite, toReadableInstruction(lines));
+  public static List<String> toReadableInstructionString(String filename) {
+    return toReadableInstructionString(readFromFile(filename));
   }
 
-  public static List<String> toReadableInstruction(List<String> binaryInstructions){
+  public static void toReadableInstructionString(String filenameRead, String filenameWrite) {
+    writeToFile(filenameWrite, toReadableInstructionString(readFromFile(filenameRead)));
+  }
+
+  public static void toReadableInstructionString( String filenameWrite, List<String> lines) {
+    writeToFile(filenameWrite, toReadableInstructionString(lines));
+  }
+
+  public static List<String> toReadableInstructionString(List<String> binaryInstructions){
     List<String> readableInstructions = new ArrayList<>();
 
     for(String line : binaryInstructions){
-      readableInstructions.add(toReadableInstructionLine(line));
+      readableInstructions.add(toReadableInstructionLineString(line));
     }
 
     return readableInstructions;
@@ -69,7 +84,108 @@ public class Conversion {
     return "r" + registerNumber;
   }
 
-  private static String toReadableInstructionLine(String line){
+
+  public static Instruction toReadableInstructionLine(String line){
+    line = line.trim();
+    if(line.contains(";")){
+      line = line.substring(0, line.indexOf(';'));
+    }
+    line = line.trim();
+
+    Instruction instruction = null;
+    String operation = line.substring(0, 6);
+    String funct;
+    String rs;
+    String rt;
+    String rd;
+    String immediate;
+
+    switch(operation){
+      case "000000":
+        funct = line.substring(26);
+        rs = line.substring(6, 11);
+        rt = line.substring(11, 16);
+        rd = line.substring(16, 21);
+        switch(funct){
+          case "100000": //add
+            instruction = new Add(Integer.parseInt(rd, 2),
+                    Integer.parseInt(rs, 2),
+                    Integer.parseInt(rt, 2));
+            break;
+          case "100010": //sub
+            instruction = new Sub(Integer.parseInt(rd, 2),
+                    Integer.parseInt(rs, 2),
+                    Integer.parseInt(rt, 2));
+            break;
+          case "011000": //mul
+            instruction = new Mul(Integer.parseInt(rd, 2),
+                    Integer.parseInt(rs, 2),
+                    Integer.parseInt(rt, 2));
+            break;
+          case "000000": //nop
+            instruction = new Nop();
+            break;
+        }
+        break;
+      case "001000": //addi
+        rs = line.substring(6, 11);
+        rt = line.substring(11, 16);
+        immediate = line.substring(16);
+        instruction = new Addi(Integer.parseInt(rt, 2),
+                Integer.parseInt(rs, 2),
+                Integer.parseInt(immediate, 2));
+        break;
+      case "000101": //beq
+        rs = line.substring(6, 11);
+        rt = line.substring(11, 16);
+        immediate = line.substring(16);
+        instruction = new Beq(Integer.parseInt(rt, 2),
+                Integer.parseInt(rs, 2),
+                Integer.parseInt(immediate, 2));
+        break;
+      case "000111": //ble
+        rs = line.substring(6, 11);
+        rt = line.substring(11, 16);
+        immediate = line.substring(16);
+        instruction = new Ble(Integer.parseInt(rt, 2),
+                Integer.parseInt(rs, 2),
+                Integer.parseInt(immediate, 2));
+        break;
+      case "000100": //bne
+        rs = line.substring(6, 11);
+        rt = line.substring(11, 16);
+        immediate = line.substring(16);
+        instruction = new Bne(Integer.parseInt(rt, 2),
+                Integer.parseInt(rs, 2),
+                Integer.parseInt(immediate, 2));
+        break;
+      case "000010": //jmp
+        immediate = line.substring(6);
+        instruction = new Jmp(Integer.parseInt(immediate, 2));
+        break;
+      case "100011": //lw
+        rs = line.substring(6, 11);
+        rt = line.substring(11, 16);
+        immediate = line.substring(16);
+        instruction = new Lw(Integer.parseInt(rt, 2),
+                Integer.parseInt(rs, 2),
+                Integer.parseInt(immediate, 2));
+        break;
+      case "101011": //sw
+        rs = line.substring(6, 11);
+        rt = line.substring(11, 16);
+        immediate = line.substring(16);
+        instruction = new Sw(Integer.parseInt(rt, 2),
+                Integer.parseInt(rs, 2),
+                Integer.parseInt(immediate, 2));
+        break;
+    }
+
+    return instruction;
+  }
+
+
+  private static String toReadableInstructionLineString(String line){
     line = line.trim();
     if(line.contains(";")){
       line = line.substring(0, line.indexOf(';'));

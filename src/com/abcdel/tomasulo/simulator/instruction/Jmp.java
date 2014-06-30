@@ -9,7 +9,11 @@ public class Jmp implements Instruction, Branch {
 
     public int imm;
 
-    @Override
+  public Jmp(int imm) {
+    this.imm = imm;
+  }
+
+  @Override
     public int[] dependencies() {
         return new int[0];
     }
