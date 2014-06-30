@@ -27,7 +27,7 @@ public class ApplicationContentHandler implements ApplicationHandler {
 
     private TableView<ReserveStationTableRow> mReserveStationTable;
     private TableView<RegisterTableRow> mRegisterTable;
-    private TableView<RecentlyUsedMemoryTableRow> mRecentlyUsedMemomryTable;
+    private TableView<RecentlyUsedMemoryTableRow> mRecentlyUsedMemoryTable;
     private TableView<GeneralInformationTableRow> mGeneralInformationTable;
 
     @Override
@@ -52,27 +52,33 @@ public class ApplicationContentHandler implements ApplicationHandler {
     }
 
     @Override
-    public void bind(ReserveStation[] reserveStations, RegisterStatus[] registerStats, int clock) {
-        List<ReserveStationTableRow> reserveStationTableRows = new ArrayList<ReserveStationTableRow>();
-        for (ReserveStation rs : reserveStations) {
+    public void bind(MainApplication.ApplicationData data) {
+        List<ReserveStationTableRow> reserveStationTableRows = new ArrayList<>();
+        for (ReserveStation rs : data.reserveStations) {
             reserveStationTableRows.add((new ReserveStationTableRow.Builder()).from(rs).build());
         }
         mReserveStationTable.getItems().setAll(reserveStationTableRows);
 
-        List<RegisterTableRow> registerStatTableRows = new ArrayList<RegisterTableRow>();
+        List<RegisterTableRow> registerStatTableRows = new ArrayList<>();
         int i = 0;
-        for (RegisterStatus regStat : registerStats) {
+        for (RegisterStatus regStat : data.registerStats) {
             registerStatTableRows.add((new RegisterTableRow.Builder()).from(regStat).setReg(i).build());
             i++;
         }
         mRegisterTable.getItems().setAll(registerStatTableRows);
+
+        GeneralInformationTableRow.Builder genInfoTableRowsBuilder = new GeneralInformationTableRow.Builder();
+        genInfoTableRowsBuilder.from(data);
+        mGeneralInformationTable.getItems().setAll(genInfoTableRowsBuilder.buildAll());
+
+
     }
 
     @Override
     public void updateApplicationState(MainApplication.ApplicationState applicationState) {
         if (applicationState == MainApplication.ApplicationState.LOADED) {
             mReserveStationTable.getItems().clear();
-            mRecentlyUsedMemomryTable.getItems().clear();
+            mRecentlyUsedMemoryTable.getItems().clear();
             mGeneralInformationTable.getItems().clear();
             mRegisterTable.getItems().clear();
         }
@@ -92,7 +98,7 @@ public class ApplicationContentHandler implements ApplicationHandler {
     }
 
     private Node createRegistersTable() {
-        mRegisterTable = new TableView<RegisterTableRow>();
+        mRegisterTable = new TableView<>();
         Field[] fields = RegisterTableRow.class.getDeclaredFields();
         for (Field field : fields) {
             String fieldName = field.getName();
@@ -105,11 +111,12 @@ public class ApplicationContentHandler implements ApplicationHandler {
     }
 
     private Node createGeneralInformationTable() {
-        mGeneralInformationTable = new TableView<GeneralInformationTableRow>();
+        mGeneralInformationTable = new TableView<>();
         Field[] fields = GeneralInformationTableRow.class.getDeclaredFields();
         for(Field field : fields) {
             String fieldName = field.getName();
             TableColumn<GeneralInformationTableRow, String> column = new TableColumn<GeneralInformationTableRow, String>(fieldName.substring(1, fieldName.length()));
+            column.setCellValueFactory(new PropertyValueFactory<GeneralInformationTableRow, String>(fieldName));
             column.prefWidthProperty().bind(mGeneralInformationTable.widthProperty().divide(fields.length));
             mGeneralInformationTable.getColumns().add(column);
         }
@@ -117,20 +124,20 @@ public class ApplicationContentHandler implements ApplicationHandler {
     }
 
     private Node createRecentlyUsedMemoryTable() {
-        mRecentlyUsedMemomryTable = new TableView<RecentlyUsedMemoryTableRow>();
+        mRecentlyUsedMemoryTable = new TableView<>();
         Field[] fields = RecentlyUsedMemoryTableRow.class.getDeclaredFields();
         for (Field field : fields) {
             String fieldName = field.getName();
             TableColumn<RecentlyUsedMemoryTableRow, String> column = new TableColumn<RecentlyUsedMemoryTableRow, String>(fieldName.substring(1, fieldName.length()));
             column.setCellValueFactory(new PropertyValueFactory<RecentlyUsedMemoryTableRow, String>(fieldName));
-            column.prefWidthProperty().bind(mRecentlyUsedMemomryTable.widthProperty().divide(fields.length));
-            mRecentlyUsedMemomryTable.getColumns().add(column);
+            column.prefWidthProperty().bind(mRecentlyUsedMemoryTable.widthProperty().divide(fields.length));
+            mRecentlyUsedMemoryTable.getColumns().add(column);
         }
-        return configureTable(mRecentlyUsedMemomryTable, "Recently Used Memory", 500, 400);
+        return configureTable(mRecentlyUsedMemoryTable, "Recently Used Memory", 500, 400);
     }
 
     private Node createReserveStationTable() {
-        mReserveStationTable = new TableView<ReserveStationTableRow>();
+        mReserveStationTable = new TableView<>();
         Field[] fields = ReserveStationTableRow.class.getDeclaredFields();
         for (Field field : fields) {
             String fieldName = field.getName();

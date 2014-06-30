@@ -14,6 +14,8 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
+import java.util.List;
+
 public class MainApplication extends Application {
 
     private Stage mMainStage;
@@ -71,9 +73,9 @@ public class MainApplication extends Application {
         mApplicationToolbarHandler.updateApplicationState(mApplicationState);
     }
 
-    public void bind(ReserveStation[] reserveStations, RegisterStatus[] registerStats, int clock) {
-        mApplicationContentHandler.bind(reserveStations, registerStats, clock);
-        mApplicationToolbarHandler.bind(reserveStations, registerStats, clock);
+    public void bind(ApplicationData data) {
+        mApplicationContentHandler.bind(data);
+        mApplicationToolbarHandler.bind(data);
     }
 
     private Node createContentPane() {
@@ -92,6 +94,15 @@ public class MainApplication extends Application {
     }
 
     public static interface ApplicationListener {
+    }
+
+    public static class ApplicationData {
+        public ReserveStation[] reserveStations;
+        public RegisterStatus[] registerStats;
+        public int clock;
+        public String PC;
+        public int concludedInstructionCount;
+        public double CPI;
     }
 }
 

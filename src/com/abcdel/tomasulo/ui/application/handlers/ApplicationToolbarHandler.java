@@ -50,8 +50,6 @@ public class ApplicationToolbarHandler implements ApplicationHandler {
         spacerLeft.getStyleClass().setAll("spacer");
         Region spacerCenter = new Region();
         spacerCenter.getStyleClass().setAll("spacer");
-        Region spacerRight = new Region();
-        spacerRight.getStyleClass().setAll("spacer");
 
         HBox buttonBar = new HBox();
         buttonBar.getStyleClass().setAll("segmented-button-bar");
@@ -61,10 +59,8 @@ public class ApplicationToolbarHandler implements ApplicationHandler {
 
         mLoadedFileLabel = new Label("No File was loaded");
         mLoadedFileLabel.setTextFill(Color.BLACK);
-        mClockLabel = new Label(String.format("Current Clock: %15d", 0));
-        mClockLabel.setTextFill(Color.BLACK);
 
-        toolBar.getItems().addAll(spacerLeft, buttonBar, spacerCenter, mClockLabel ,spacerRight, mLoadedFileLabel);
+        toolBar.getItems().addAll(spacerLeft, buttonBar, spacerCenter, mLoadedFileLabel);
         return toolBar;
     }
 
@@ -78,8 +74,8 @@ public class ApplicationToolbarHandler implements ApplicationHandler {
     }
 
     @Override
-    public void bind(ReserveStation[] reserveStations, RegisterStatus[] registerStats, int clock) {
-        mClockLabel.setText(String.format("Current Clock: %15d", clock));
+    public void bind(MainApplication.ApplicationData data) {
+        // No need to bind data
     }
 
     @Override

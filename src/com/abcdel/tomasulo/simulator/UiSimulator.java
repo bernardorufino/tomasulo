@@ -35,7 +35,7 @@ public class UiSimulator implements ApplicationToolbarHandler.ApplicationToolbar
                 .put(FunctionalUnit.Type.MULT, new int[] {1, 1})
                 .put(FunctionalUnit.Type.LOAD, new int[] {2, 2})
                 .build());
-        mMemory = new ConstantUniformAccessTimeMemory();
+        mMemory = new TwoLevelCachedMemoryDecorator();
         List<Instruction> instructions = ImmutableList.of(
                 new Lw(6, 2, 34),
                 new Lw(2, 3, 45),
@@ -80,11 +80,15 @@ public class UiSimulator implements ApplicationToolbarHandler.ApplicationToolbar
             Collections.addAll(reserveStations, rs);
         }
         ReserveStation[] rsArray = reserveStations.toArray(new ReserveStation[reserveStations.size()]);
-        // TODO: insert correct clock value
         for (int i = 0; i < mCpu.registerStatus.length; i++) {
             mCpu.registerStatus[i].Vi = mCpu.registers[i];
         }
-        mApplication.bind(rsArray, mCpu.registerStatus, mSimulator.getClock());
+
+        MainApplication.ApplicationData applicationData = new MainApplication.ApplicationData();
+        applicationData.reserveStations = rsArray;
+        applicationData.registerStats = mCpu.registerStatus;
+        applicationData.clock = mSimulator.getClock();
+        mApplication.bind(applicationData);
     }
 
     @Override
