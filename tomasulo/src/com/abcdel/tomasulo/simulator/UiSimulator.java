@@ -113,12 +113,7 @@ public class UiSimulator implements ApplicationToolbarHandler.ApplicationToolbar
                     throw error;
                 }
                 if (mPlaying.get()) {
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            onStep();
-                        }
-                    });
+                    runSimulationStep();
                 }
             }
         }
@@ -127,23 +122,47 @@ public class UiSimulator implements ApplicationToolbarHandler.ApplicationToolbar
     @Override
     public void onPlay() {
         mPlaying.set(true);
+        mApplication.setApplicationState(ApplicationState.RUNNING);
     }
 
     @Override
     public void onStop() {
         mPlaying.set(false);
+        mApplication.setApplicationState(ApplicationState.LOADED);
     }
 
     @Override
     public void onStep() {
+        mApplication.setApplicationState(ApplicationState.STEPPING);
+        runSimulationStep();
+        mApplication.setApplicationState(ApplicationState.PAUSED);
+    }
+
+    @Override
+    public void onPause() {
+        mPlaying.set(false);
+        mApplication.setApplicationState(ApplicationState.PAUSED);
+    }
+
+    @Override
+    public void onRestart() {
+        mSimulator = newSimulator();
+        mApplication.setApplicationState(ApplicationState.LOADED);
+    }
+
+    private void runSimulationStep() {
         if (mSimulator.hasFinished()) {
-            onStop();
+            mPlaying.set(false);
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    mApplication.setApplicationState(ApplicationState.FINISHED);
+                }
+            });
             return;
         }
-        mApplication.setApplicationState(ApplicationState.STEPPING);
         mSimulator.clock();
         bindSimulator();
-        mApplication.setApplicationState(ApplicationState.PAUSED);
     }
 
     private void bindSimulator() {
@@ -154,7 +173,7 @@ public class UiSimulator implements ApplicationToolbarHandler.ApplicationToolbar
             mCpu.registerStatus[i].Vi = mCpu.registers[i];
         }
 
-        MainApplication.ApplicationData applicationData = new MainApplication.ApplicationData();
+        final MainApplication.ApplicationData applicationData = new MainApplication.ApplicationData();
         applicationData.reserveStations = rsArray;
         applicationData.registerStats = mCpu.registerStatus;
         applicationData.clock = mSimulator.getClock();
@@ -163,11 +182,11 @@ public class UiSimulator implements ApplicationToolbarHandler.ApplicationToolbar
         applicationData.CPI = (count == 0) ? 0 : (double) applicationData.clock / count;
         applicationData.PC = mCpu.programCounter.get() + ": " + Instructions.toString(mSimulator.getCurrentInstruction());
         applicationData.recentlyUsedMemory = mMemory.getRecentMemory();
-        mApplication.bind(applicationData);
-    }
-
-    @Override
-    public void onPause() {
-        System.out.println("onPause");
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                mApplication.bind(applicationData);
+            }
+        });
     }
 }

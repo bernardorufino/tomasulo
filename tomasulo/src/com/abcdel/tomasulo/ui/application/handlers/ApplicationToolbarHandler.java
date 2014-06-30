@@ -30,6 +30,8 @@ public class ApplicationToolbarHandler implements ApplicationHandler {
     private Button mFileButton;
     private ImageView mPlayIcon;
     private ImageView mPauseIcon;
+    private ImageView mRestartIcon;
+    private ImageView mStopIcon;
     private Label mLoadedFileLabel;
     private Label mStateLabel;
 
@@ -83,7 +85,7 @@ public class ApplicationToolbarHandler implements ApplicationHandler {
     @Override
     public void updateApplicationState(MainApplication.ApplicationState applicationState){
         updateEnabledButtons(applicationState);
-        updatePlayIcon(applicationState);
+        updateIcons(applicationState);
         updateStateLabel(applicationState);
     }
 
@@ -95,11 +97,11 @@ public class ApplicationToolbarHandler implements ApplicationHandler {
         mPlayButton = new Button();
         mPlayIcon = fetchIcon("play.png");
         mPauseIcon = fetchIcon("pause.png");
-        updatePlayIcon(mApplication.getApplicationState());
         mPlayButton.getStyleClass().addAll("first");
 
         mStopButton = new Button();
-        setButtonIcon(mStopButton, "stop.png");
+        mRestartIcon = fetchIcon("restart.png");
+        mStopIcon = fetchIcon("stop.png");
 
         mStepButton = new Button();
         setButtonIcon(mStepButton, "step.png");
@@ -107,6 +109,8 @@ public class ApplicationToolbarHandler implements ApplicationHandler {
         mFileButton = new Button();
         setButtonIcon(mFileButton, "folder.png");
         mFileButton.getStyleClass().addAll("last", "capsule");
+
+        updateIcons(mApplication.getApplicationState());
     }
 
     private void setButtonIcon(Button button, String iconName) {
@@ -148,7 +152,11 @@ public class ApplicationToolbarHandler implements ApplicationHandler {
             @Override
             public void handle(ActionEvent event) {
                 for (ApplicationToolbarListener listener : mListeners) {
-                    listener.onStop();
+                    if (shouldDisplayRestartButton(mApplication.getApplicationState())) {
+                        listener.onRestart();
+                    } else {
+                        listener.onStop();
+                    }
                 }
             }
         });
@@ -175,8 +183,13 @@ public class ApplicationToolbarHandler implements ApplicationHandler {
         });
     }
 
-    private void updatePlayIcon(MainApplication.ApplicationState applicationState) {
+    private void updateIcons(MainApplication.ApplicationState applicationState) {
         mPlayButton.setGraphic(shouldDisplayPauseButton(applicationState) ? mPauseIcon : mPlayIcon);
+        mStopButton.setGraphic(shouldDisplayRestartButton(applicationState) ? mRestartIcon : mStopIcon);
+    }
+
+    private boolean shouldDisplayRestartButton(MainApplication.ApplicationState applicationState) {
+        return applicationState == MainApplication.ApplicationState.FINISHED;
     }
 
     private boolean shouldDisplayPauseButton(MainApplication.ApplicationState applicationState) {
@@ -216,9 +229,9 @@ public class ApplicationToolbarHandler implements ApplicationHandler {
                 mFileButton.setDisable(true);
                 break;
             case FINISHED:
-                mPlayButton.setDisable(false);
-                mStepButton.setDisable(false);
-                mStopButton.setDisable(true);
+                mPlayButton.setDisable(true);
+                mStepButton.setDisable(true);
+                mStopButton.setDisable(false);
                 mFileButton.setDisable(false);
                 break;
             default:
@@ -237,6 +250,8 @@ public class ApplicationToolbarHandler implements ApplicationHandler {
         public void onStep();
 
         public void onPause();
+
+        public void onRestart();
     }
 
 }
