@@ -1,9 +1,6 @@
-    	ADDI R1, R0, 9
+		ADDI R1, R0, 9
 		ADDI R2, R0, 1
 		ADDI R3, R0, 1
-		SW R2, 24(R0)
-LOOP:   LW R4, 24(R0)
-		MUL R4, R4, R3
-		SW R4, 24(R0)
+LOOP:	MUL R4, R4, R3
 		ADDI R3, R3, 1
 		BLE R3, R1, LOOP
