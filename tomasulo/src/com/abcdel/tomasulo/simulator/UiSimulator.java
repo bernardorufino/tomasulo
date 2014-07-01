@@ -15,10 +15,15 @@ import javafx.application.Platform;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -29,27 +34,17 @@ import static com.google.common.base.Preconditions.checkState;
 
 public class UiSimulator implements ApplicationToolbarHandler.ApplicationToolbarListener {
 
-    private static final int INTERVAL = 7;
-    private static final int MEMORY_RECENTS_TO_TRACK = 10;
+    private static final String CONFIG_FILE_NAME = "tomasulo.config";
     private static final ExecutorService POOL = Executors.newSingleThreadExecutor();
-    private static final boolean TWO_LEVEL_CACHED_MEMORY = false; // false for constant access time memory
     private static final int INSTRUCTION_SIZE = 32; // In bits
 
-
-    private static class TwoLevelCachedMemoryParams {
-
-        private static final int L1_SIZE = 64 * 1024 / 4;
-        private static final int L1_BLOCKS_PER_SET = 2;
-        private static final int L2_SIZE = 1 * 1024 * 1024 / 4;
-        private static final int L2_BLOCKS_PER_SET = 16;
-    }
-
     private final MainApplication mApplication;
+    private final Thread mFxThread;
     private Simulator mSimulator;
     private TomasuloCpu mCpu;
     private RecentsTrackerMemoryDecorator mMemory;
     private List<Instruction> mProgram;
-    private final Thread mFxThread;
+    private int mInterval;
 
     public UiSimulator(MainApplication application) {
         application.addToolbarListener(this);
@@ -60,25 +55,52 @@ public class UiSimulator implements ApplicationToolbarHandler.ApplicationToolbar
         POOL.shutdown();
     }
 
-    public void setup() {
-        mCpu = new TomasuloCpu.Builder()
-                .setNumberOfRegisters(32)
-                .setFunctionalUnits(FunctionalUnit.Type.ADD, 4, 4)
-                .setFunctionalUnits(FunctionalUnit.Type.MULT, 2, 2)
-                .setFunctionalUnits(FunctionalUnit.Type.LOAD, 2, 2)
-                .setFunctionalUnits(FunctionalUnit.Type.BRANCH, 1, 1)
-                .build();
-        Memory memory;
-        if (TWO_LEVEL_CACHED_MEMORY) {
-            memory = new TwoLevelCachedMemoryAdapter(new TwoLevelCachedMemory(
-                    TwoLevelCachedMemoryParams.L1_SIZE,
-                    TwoLevelCachedMemoryParams.L1_BLOCKS_PER_SET,
-                    TwoLevelCachedMemoryParams.L2_SIZE,
-                    TwoLevelCachedMemoryParams.L2_BLOCKS_PER_SET));
-        } else {
-            memory = new ConstantUniformAccessTimeMemory();
+    private File getConfigurationFile() {
+        try {
+            String path = URLDecoder.decode(UiSimulator.class.getProtectionDomain().getCodeSource().getLocation().getPath(), "UTF-8");
+            return Paths.get(path).resolveSibling(CONFIG_FILE_NAME).toFile();
+        } catch (UnsupportedEncodingException e) {
+            return null;
         }
-        mMemory = new RecentsTrackerMemoryDecorator(memory, MEMORY_RECENTS_TO_TRACK);
+    }
+
+    public void setup() {
+        File file = getConfigurationFile();
+         Configuration config;
+        if (file != null && file.isFile()) {
+            System.out.print("Configuration file exists, trying to read from it... ");
+            try {
+                System.out.println("SUCCESS");
+                config = Configuration.fromFile(file);
+            } catch (Configuration.FileMalformedException e) {
+                System.out.println("File malformed, falling back to default settings");
+                config = Configuration.defaults();
+            }
+        } else {
+            System.out.println("No configuration file, using defaults");
+            config = Configuration.defaults();
+        }
+        TomasuloCpu.Builder builder = new TomasuloCpu.Builder();
+        builder.setNumberOfRegisters(config.registers);
+        for (Map.Entry<FunctionalUnit.Type, Configuration.FunctionalUnitSpecs>
+                entry : config.functionalUnits.entrySet()) {
+            FunctionalUnit.Type type = entry.getKey();
+            Configuration.FunctionalUnitSpecs specs = entry.getValue();
+            builder.setFunctionalUnits(type, specs.functionalUnits, specs.reserveStations);
+        }
+        mCpu = builder.build();
+        Memory memory;
+        if (config.useCache) {
+            memory = new TwoLevelCachedMemoryAdapter(new TwoLevelCachedMemory(
+                    config.l1.size,
+                    config.l1.blocksPerSet,
+                    config.l2.size,
+                    config.l2.blocksPerSet));
+        } else {
+            memory = new ConstantUniformAccessTimeMemory(config.constantMemoryAccessTime);
+        }
+        mMemory = new RecentsTrackerMemoryDecorator(memory, config.track);
+        mInterval = config.interval;
     }
 
     private Simulator newSimulator() {
@@ -118,7 +140,7 @@ public class UiSimulator implements ApplicationToolbarHandler.ApplicationToolbar
         public void run() {
             while (mFxThread.isAlive()) {
                 try {
-                    Thread.sleep(INTERVAL);
+                    Thread.sleep(mInterval);
                 } catch (InterruptedException e) {
                     AssertionError error = new AssertionError();
                     error.initCause(e);

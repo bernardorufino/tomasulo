@@ -5,10 +5,15 @@ import java.util.Map;
 
 public class ConstantUniformAccessTimeMemory implements Memory {
 
-    public static final int CYCLE_COST = 4;
     private static final int GARBAGE = 0x00000000;
 
+    private final int mCycleCost;
+
     private Map<Integer, Integer> mMemory = new HashMap<>();
+
+    public ConstantUniformAccessTimeMemory(int cycleCost) {
+        mCycleCost = cycleCost;
+    }
 
     @Override
     public int read(int address) {
@@ -27,6 +32,6 @@ public class ConstantUniformAccessTimeMemory implements Memory {
 
     @Override
     public int getLastAccessCost() {
-        return CYCLE_COST;
+        return mCycleCost;
     }
 }

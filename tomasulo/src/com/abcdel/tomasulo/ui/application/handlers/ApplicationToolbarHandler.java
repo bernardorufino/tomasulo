@@ -14,9 +14,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -123,13 +121,14 @@ public class ApplicationToolbarHandler implements ApplicationHandler {
     private ImageView fetchIcon(String iconName) {
         ImageView icon = null;
         try {
+            InputStream resource = getClass().getClassLoader().getResourceAsStream("icons/" + iconName);
             icon = new ImageView(new Image(
-                    new FileInputStream("tomasulo/res/icons/" + iconName),
+                    resource,
                     BUTTON_IMAGE_DIMENSION,
                     BUTTON_IMAGE_DIMENSION,
                     true,
                     true));
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return icon;
