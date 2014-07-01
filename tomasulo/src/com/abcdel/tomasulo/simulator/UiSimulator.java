@@ -15,12 +15,9 @@ import javafx.application.Platform;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -57,9 +54,9 @@ public class UiSimulator implements ApplicationToolbarHandler.ApplicationToolbar
 
     private File getConfigurationFile() {
         try {
-            String path = URLDecoder.decode(UiSimulator.class.getProtectionDomain().getCodeSource().getLocation().getPath(), "UTF-8");
-            return Paths.get(path).resolveSibling(CONFIG_FILE_NAME).toFile();
-        } catch (UnsupportedEncodingException e) {
+            String prePath = UiSimulator.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+            return new File(prePath).toPath().resolveSibling(CONFIG_FILE_NAME).toFile();
+        } catch (URISyntaxException e) {
             return null;
         }
     }
