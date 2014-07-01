@@ -63,12 +63,12 @@ public class UiSimulator implements ApplicationToolbarHandler.ApplicationToolbar
 
     public void setup() {
         File file = getConfigurationFile();
-         Configuration config;
+        Configuration config;
         if (file != null && file.isFile()) {
             System.out.print("Configuration file exists, trying to read from it... ");
             try {
-                System.out.println("SUCCESS");
                 config = Configuration.fromFile(file);
+                System.out.println("SUCCESS");
             } catch (Configuration.FileMalformedException e) {
                 System.out.println("File malformed, falling back to default settings");
                 config = Configuration.defaults();
